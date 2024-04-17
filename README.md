@@ -103,7 +103,7 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 ## Melee
 
-#### The doctor infects villagers with a melee attack and deals some damage. If he hits Patrick, he just deals damage to the hit.
+#### The doctor infects villagers with a melee attack and deals some damage, Infected villagers take damage over time. If he hits Patrick, he just deals damage to the hit.
 
 <img src="---" width="auto">
 
