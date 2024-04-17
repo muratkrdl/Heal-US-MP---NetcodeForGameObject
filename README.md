@@ -1,7 +1,5 @@
 # Heal-US-MP---Pun2
 
-# Heal-Us
-
 Someone claiming to be a doctor wants to make the villagers sick. 
 
 You warned them, but they realized the danger too late. 
