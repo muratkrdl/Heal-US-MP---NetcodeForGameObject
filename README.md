@@ -83,19 +83,42 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 
 
+# Doctor Skills
+
+## Spawn
+
+#### The doctor can summon monsters and the monsters he summons focus on Patrick
+
+## Explosion
+
+#### The doctor creates an explosion where he aims
+
+#### Doctor abilities(spawn-Explosion)
+
+
+
+<img src="---" width="auto">
 # Villager Skills
 
 ## Villagers can collect items
 
+# Collectable Items
 
-# Doctor Skills
+#### Daffodil
 
-## Doctor uses ability 
+<img src="--" width="auto">
 
-#### Doctor ability(spawn-Explosion)
+#### Hyacinth
 
-<img src="---" width="auto">
+<img src="--" width="auto">
 
+#### Yellow Mushroom
+
+<img src="--" width="auto">
+
+#### Purple Mushroom
+
+<img src="--" width="auto">
 
 
 
