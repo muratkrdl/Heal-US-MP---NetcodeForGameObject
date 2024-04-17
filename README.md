@@ -135,9 +135,13 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 <img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Gifs/Collect%20items.gif" width="auto">
 
-## The villager turns the collected items into dust with his hands and throws them. If the dust pieces hit the doctor, the doctor becomes blind for a short time.
+## The villager turns the collected items into dust with his hands and throws them.
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Gifs/Use%20flash.gif" width="auto">
+
+## If the dust pieces hit the doctor, the doctor becomes blind for a short time.
+
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Gifs/Flash.gif" width="auto">
 
 ## The villager can throw the items he has collected into the cauldron and boil them. After the plants are boiled together, a poison emerges. The villager can throw this poison at the doctor. If he manages to throw the poison at the doctor, the doctor will takes a high amount of damage.
 
