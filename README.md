@@ -93,9 +93,10 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 #### Doctor abilities(spawn-Explosion)
 
-
-
 <img src="---" width="auto">
+
+
+
 # Villager Skills
 
 ## Villagers can collect items
@@ -115,6 +116,23 @@ Come on, you need villagers, otherwise who will you buy pot from?
 <img src="--" width="auto">
 
 #### Purple Mushroom
+
+<img src="--" width="auto">
+
+#### Collecting Items
+
+<img src="--" width="auto">
+
+## The villager turns the collected items into dust with his hands and throws them. If the dust pieces hit the doctor, the doctor becomes blind for a short time.
+
+<img src="--" width="auto">
+
+## The villager can throw the items he has collected into the cauldron and boil them. After the plants are boiled together, a poison emerges. The villager can throw this poison at the doctor. If he manages to throw the poison at the doctor, the doctor will takes a high amount of damage.
+
+<img src="--" width="auto">
+
+
+# The game has a timer if time runs out the doctor loses the game
 
 <img src="--" width="auto">
 
