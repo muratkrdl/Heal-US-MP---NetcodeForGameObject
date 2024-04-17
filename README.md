@@ -15,7 +15,7 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 ### Patrick
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Photos/Keyboard.png" width="auto">
+<img src="-- width="auto">
 
 ### Doctor
 
@@ -36,26 +36,26 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 #### Hp Potion
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Photos/HP%20potion.png" width="auto">
+<img src="--" width="auto">
 
 #### Mana Potion
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Photos/Mana%20potion.png" width="auto">
+<img src="--" width="auto">
 
 #### Stamina Potion
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Photos/Stamina%20potion.png" width="auto">
+<img src="--" width="auto">
 
 #### Ice Potion
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Photos/Ice%20potion.png" width="auto">
+<img src="--" width="auto">
 
 
 ## Ice Potion (Dcotor-Patrick)
 
 #### It slows down units trying to pass over it. including villagers
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Gifs/Ice%20Poison.gif" width="auto">
+<img src="--" width="auto">
 
 
 
@@ -65,19 +65,19 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 #### The fireball stunned for a long period of time and deals damage
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Gifs/Fireball.gif" width="auto">
+<img src="--" width="auto">
 
 ## Lightning 
 
 ##### You can use lightning from any distance you want.
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Gifs/Lightning.gif" width="auto">
+<img src="--" width="auto">
 
 ## Poison 
  
 #### Poison deals damage over time
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Gifs/Poison.gif" width="auto">
+<img src="--" width="auto">
 
 
 
@@ -140,20 +140,21 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 #### Doctor Win Scene
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Gifs/Lose.gif" width="auto">
+<img src="--" width="auto">
 
 #### Patrick Win Scene
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Gifs/Win-Scene.gif" width="auto">
+<img src="--" width="auto">
+
 
 
 # Some Photos From Game
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Photos/Picture1.png" width="auto">
+<img src="--" width="auto">
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Photos/Picture2.png" width="auto">
+<img src="--" width="auto">
 
-<img src="https://github.com/muratkrdl/Heal-Us/blob/main/Pictures%20and%20Gifs/Photos/Picture3.png" width="auto">
+<img src="--" width="auto">
 
 
 # Builds
