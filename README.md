@@ -72,6 +72,13 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 <img src="--" width="auto">
 
+## Heal 
+ 
+#### Heals infected villagers and gives them some health
+
+<img src="--" width="auto">
+
+
 
 ## Use Ice Potion (Dcotor-Patrick)
 
@@ -91,6 +98,12 @@ Come on, you need villagers, otherwise who will you buy pot from?
 #### The doctor creates an explosion where he aims
 
 #### Doctor abilities(spawn-Explosion)
+
+<img src="---" width="auto">
+
+## Melee
+
+#### The doctor infects villagers with a melee attack and deals some damage. If he hits Patrick, he just deals damage to the hit.
 
 <img src="---" width="auto">
 
