@@ -15,15 +15,15 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 ### Patrick
 
-<img src="-- width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Patrick.png" width="auto">
 
 ### Doctor
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Doctor.png" width="auto">
 
 ### Villager
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Villager.png" width="auto">
 
 
 # Pickups (Doctor-Patrick)
@@ -36,26 +36,19 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 #### Hp Potion
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/HP%20potion.png" width="auto">
 
 #### Mana Potion
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Mana%20potion.png" width="auto">
 
 #### Stamina Potion
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Stamina%20potion.png" width="auto">
 
 #### Ice Potion
 
-<img src="--" width="auto">
-
-
-## Ice Potion (Dcotor-Patrick)
-
-#### It slows down units trying to pass over it. including villagers
-
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Ice%20potion.png" width="auto">
 
 
 
@@ -79,6 +72,12 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 <img src="--" width="auto">
 
+
+## Use Ice Potion (Dcotor-Patrick)
+
+#### It slows down units trying to pass over it. including villagers
+
+<img src="--" width="auto">
 
 
 # Doctor Skills
@@ -105,19 +104,19 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 #### Daffodil
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Daffodil.png" width="auto">
 
 #### Hyacinth
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Hycanith.png" width="auto">
 
 #### Yellow Mushroom
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/YellowMushroom.png" width="auto">
 
 #### Purple Mushroom
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/PurpleMushroom.png" width="auto">
 
 #### Collecting Items
 
@@ -134,27 +133,27 @@ Come on, you need villagers, otherwise who will you buy pot from?
 
 # The game has a timer if time runs out the doctor loses the game
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Timer.png" width="auto">
 
 
 
 #### Doctor Win Scene
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Doctor%20Win.png" width="auto">
 
 #### Patrick Win Scene
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Patrick%20Win.png" width="auto">
 
 
 
 # Some Photos From Game
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Picture1.png" width="auto">
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Picture2.png" width="auto">
 
-<img src="--" width="auto">
+<img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Picture3.png" width="auto">
 
 
 # Builds
