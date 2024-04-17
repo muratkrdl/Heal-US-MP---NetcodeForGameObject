@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 330147e9c33b24b46b801d5d41ed2399
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - choosenVisualArea: {instanceID: 0}
+  - inventoryItemPrefab: {instanceID: 0}
+  - daffodilSprite: {fileID: 21300000, guid: e08d6fd447e212e45941e0382b7242ba, type: 3}
+  - hyacinthSprite: {fileID: 21300000, guid: dd1185007c673ac44b45743f29415c72, type: 3}
+  - yellowMushroomSprite: {fileID: 21300000, guid: 269662755d5d04d418bc12872f4a7336,
+      type: 3}
+  - purpleMushroomSprite: {fileID: 21300000, guid: 9b969ad0e031acd48b0326a0cbbadbca,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

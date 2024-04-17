@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Intro.unity
+    guid: 1e5dcfc083a26094da5bc46461a5ed2f
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 47c9e16aa7badc644a86512b77c83920
+  - enabled: 1
+    path: Assets/Scenes/MultiplayerGame.unity
+    guid: 8434f278490605a439b52469590a7334
+  - enabled: 1
+    path: Assets/Scenes/PatrickLose.unity
+    guid: 78961f6161857114a98fbffa52039270
+  - enabled: 1
+    path: Assets/Scenes/PatrickWin.unity
+    guid: 8448990c45dd2784797fe8fffaa1a139
+  m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7,
+      type: 2}

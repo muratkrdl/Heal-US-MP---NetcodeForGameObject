@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - CinemachineTarget
+  - Monster
+  - Ball
+  - Mana Pickup
+  - Gate
+  - Lever
+  - Key
+  - Exit
+  - BG
+  - Villager
+  - Doctor
+  - Patrick
+  - Cauldron
+  - daffodil
+  - hyacinth
+  - yellowMushroom
+  - purpleMushroom
+  - Flash
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - Doctor
+  - Villager
+  - Patrick
+  - Abilities
+  - Ice
+  - Potions
+  - 
+  - IceThrow
+  - Obstacle
+  - 
+  - Interact
+  - 
+  - Hand
+  - 
+  - MyChar
+  - 
+  - FreeCam
+  - 
+  - Plant
+  - Cauldron
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
