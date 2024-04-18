@@ -36,6 +36,7 @@ public class ErrorCanvas : MonoBehaviour
     {
         menu.Close();
         var newCanvas = Instantiate(mainMenuCanvas);
+        obj = newCanvas.GetComponent<MainMenuManager>();
 
         if(PhotonNetwork.IsConnected)
             newCanvas.GetComponent<MainMenuManager>().OpenMenu("title");
