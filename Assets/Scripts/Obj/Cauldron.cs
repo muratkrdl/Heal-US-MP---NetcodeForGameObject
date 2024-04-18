@@ -227,7 +227,7 @@ public class Cauldron : MonoBehaviour
         }
 
         DestroyAllPlantObj();
-        PV.RPC(nameof(RPC_Cooked),RpcTarget.All);
+        PV.RPC(nameof(RPC_Cooked),RpcTarget.AllViaServer);
     }
 
     [PunRPC] void RPC_CollectedCookedItem()

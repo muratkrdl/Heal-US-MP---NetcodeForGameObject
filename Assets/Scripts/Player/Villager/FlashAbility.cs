@@ -56,7 +56,17 @@ public class FlashAbility : MonoBehaviour
             PlantType.purplemushroom => PURPLE_MUSHROOM_PREFAB_NAME,
             _ => POISON_PREFAB_NAME
         };
-        ParticleSystem playVFX = prefabName switch
+        
+        inventory.DecreaseItemAmount();
+        PV.RPC(nameof(RPC_FlashVFX), RpcTarget.All, prefabName);
+        
+        SoundManager.Instance.RPCPlaySound3D("Throw Plant", transform.position);
+        PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", prefabName), flashOutPos.position, flashOutPos.rotation);
+    }
+
+    [PunRPC] void RPC_FlashVFX(string str)
+    {
+        ParticleSystem playVFX = str switch
         {
             DAFFODIL_PREFAB_NAME => daffodilVFX,
             HYCANITH_PREFAB_NAME => hycanithVFX,
@@ -64,11 +74,7 @@ public class FlashAbility : MonoBehaviour
             PURPLE_MUSHROOM_PREFAB_NAME => purpleMushroomVFX,
             _ => potionVFX
         };
-
-        inventory.DecreaseItemAmount();
         playVFX.Play();
-        SoundManager.Instance.RPCPlaySound3D("Throw Plant", transform.position);
-        PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", prefabName), flashOutPos.position, flashOutPos.rotation);
     }
 
 }

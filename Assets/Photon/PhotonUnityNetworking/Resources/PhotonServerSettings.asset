@@ -102,6 +102,7 @@ MonoBehaviour:
   - RPC_StopRunSFX
   - RPC_StopWalkSFX
   - RPC_PlaySound3D
+  - RPC_FlashVFX
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
