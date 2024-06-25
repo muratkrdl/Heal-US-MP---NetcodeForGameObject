@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 961635502499945216}
   - component: {fileID: 8862429423514201789}
   - component: {fileID: 8571935400788376771}
-  - component: {fileID: 4939187624608202131}
   - component: {fileID: 2920826906583248198}
-  - component: {fileID: 6471698418136251343}
+  - component: {fileID: 1407651146639567670}
+  - component: {fileID: -6352302052375499049}
   m_Layer: 19
   m_Name: Fence Gate
   m_TagString: Gate
@@ -131,29 +131,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &4939187624608202131
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7656248157824701413}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: 6471698418136251343}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!114 &2920826906583248198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,8 +143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69bd2f3359c618448a8184e0469e4c23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PV: {fileID: 4939187624608202131}
---- !u!114 &6471698418136251343
+--- !u!114 &1407651146639567670
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -176,18 +152,39 @@ MonoBehaviour:
   m_GameObject: {fileID: 7656248157824701413}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowLayerWeightsInspector: 1
-  ShowParameterInspector: 1
-  m_SynchronizeParameters:
-  - Type: 9
-    SynchronizeType: 1
-    Name: Open
-  m_SynchronizeLayers:
-  - SynchronizeType: 1
-    LayerIndex: 0
+  GlobalObjectIdHash: 724768916
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 1
+  AutoObjectParentSync: 1
+--- !u!114 &-6352302052375499049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7656248157824701413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2071f1f07b75297428237a8468fb4e4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 2081823275
+    DestinationState: 71445658
+    TransitionDuration: 0.1
+    TriggerNameHash: 71445658
+    TransitionIndex: 0
+  m_Animator: {fileID: 8571935400788376771}
 --- !u!1001 &332680468079063415
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -299,6 +296,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 222737291686008476}
     m_Modifications:
+    - target: {fileID: -5856239500675231871, guid: cdd96f2c9ed4378499afb3365d1d159a,
+        type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2107215855
+      objectReference: {fileID: 0}
     - target: {fileID: 37228223483615655, guid: cdd96f2c9ed4378499afb3365d1d159a,
         type: 3}
       propertyPath: m_Name
@@ -364,7 +366,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 148272491760403202, guid: cdd96f2c9ed4378499afb3365d1d159a, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

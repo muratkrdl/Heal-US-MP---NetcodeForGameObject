@@ -1,13 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class SoundManager : MonoBehaviour
 {
-    [SerializeField] PhotonView PV;
-
     public static SoundManager Instance;
  
     [SerializeField] SoundLibrary sfxLibrary;
@@ -33,17 +31,17 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void RPCPlaySound3D(string soundName, Vector3 pos)
-    {
-        PV.RPC(nameof(RPC_PlaySound3D), RpcTarget.All, soundName, pos);
-    }
-
     public void PlaySound3D(string soundName, Vector3 pos)
     {
         PlaySound3D(sfxLibrary.GetClipFromName(soundName), pos);
     }
 
-    [PunRPC] void RPC_PlaySound3D(string soundName, Vector3 pos)
+    [ServerRpc(RequireOwnership = false)] public void Play3DSoundServerRpc(string soundName, Vector3 pos)
+    {
+        Play3DSoundClientRpc(soundName, pos);
+    }
+
+    [ClientRpc] void Play3DSoundClientRpc(string soundName, Vector3 pos)
     {
         PlaySound3D(sfxLibrary.GetClipFromName(soundName), pos);
     }

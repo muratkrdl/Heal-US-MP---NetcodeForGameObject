@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Photon.Pun;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,9 +16,9 @@ public enum PlantType
     potion
 }
 
-public class Cauldron : MonoBehaviour
+public class Cauldron : NetworkBehaviour
 {
-    [SerializeField] PhotonView PV;
+    [SerializeField] GameObject[] spawnObjPrefabs;
 
     [SerializeField] Transform itemDropPos;
 
@@ -53,11 +53,6 @@ public class Cauldron : MonoBehaviour
     [SerializeField] int maxHyacinth;
     [SerializeField] int maxYellowMushroom;
     [SerializeField] int maxPurpleMushroom;
-
-    const string DAFFODIL_PREFAB_NAME = "Daffodil";
-    const string HYCAINTH_PREFAB_NAME = "Hyacinth";
-    const string YELLOW_MUSHROOM_PREFAB_NAME = "YellowMushroom";
-    const string PURPLE_MUSHROOM_PREFAB_NAME = "PurpleMushroom";
 
     int currentDaffodil;
     int currentHyacinth;
@@ -96,40 +91,57 @@ public class Cauldron : MonoBehaviour
 
     public void InteractWithCauldron(PlantType type)
     {
-        string spawnObjName = type switch
+        int spawnObjIndex = type switch
         {
-            PlantType.daffodil => DAFFODIL_PREFAB_NAME,
-            PlantType.hyacinth => HYCAINTH_PREFAB_NAME,
-            PlantType.yellowmushroom => YELLOW_MUSHROOM_PREFAB_NAME,
-            PlantType.purplemushroom => PURPLE_MUSHROOM_PREFAB_NAME,
-            _ => " "
+            PlantType.daffodil => 0,
+            PlantType.hyacinth => 1,
+            PlantType.yellowmushroom => 2,
+            PlantType.purplemushroom => 3,
+            _ => 4
         };
 
-        if(!CheckNeeded(type) || spawnObjName == " ") { return; }
-
-        var obj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs",spawnObjName), itemDropPos.position, new Quaternion(Random.Range(0,359),Random.Range(0,359),Random.Range(0,359), 1));
-        plantObjs.Add(obj);
-        SoundManager.Instance.RPCPlaySound3D("Spawn PlantObj", itemDropPos.position);
+        if(!CheckNeeded(type)) { return; }
+        SpawnObjServerRpc(spawnObjIndex);
+        
+        SoundManager.Instance.PlaySound3D("Spawn PlantObj", itemDropPos.position); // herkese çal
 
         StartCoroutine(DecreaseNeededItemAmount(type));
+    }
+
+    [ServerRpc(RequireOwnership = false)] void SpawnObjServerRpc(int index)
+    {
+        var spawnObj = spawnObjPrefabs[index];
+        var spawnedObj = Instantiate(spawnObj, itemDropPos);
+        spawnedObj.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.ServerClientId, true);
+        plantObjs.Add(spawnedObj);
     }
 
     public void CollectCookedItem(Inventory inventory)
     {
         inventory.CollectItem(PlantType.potion, GetComponent<PlantObj>());
-        PV.RPC(nameof(RPC_CollectedCookedItem),RpcTarget.All);
+        CollectedCookedItemServerRpc();
     }
 
     IEnumerator DecreaseNeededItemAmount(PlantType type)
     {
         yield return new WaitForSeconds(decreaseTime);
 
-        PV.RPC(nameof(UpdateNeededItemAmount), RpcTarget.All, type);
+        UpdateNeededItemAmount(type);
 
         StopCoroutine(DecreaseNeededItemAmount(type));
     }
 
-    [PunRPC] void UpdateNeededItemAmount(PlantType type)
+    void UpdateNeededItemAmount(PlantType type)
+    {
+        UpdateNeededItemAmountServerRpc(type);
+    }
+
+    [ServerRpc(RequireOwnership = false)] void UpdateNeededItemAmountServerRpc(PlantType type)
+    {
+        UpdateNeededItemAmountClientRpc(type);
+    }
+
+    [ClientRpc] void UpdateNeededItemAmountClientRpc(PlantType type)
     {
         if(type == PlantType.daffodil)
         {
@@ -160,13 +172,97 @@ public class Cauldron : MonoBehaviour
                 purpleMushroomTaskImage.gameObject.SetActive(false);
         }
 
-        if(PhotonNetwork.IsMasterClient)
+        if(CheckCanCook())
         {
-            if(CheckCanCook())
+            if(!IsOwner) return;
+            CookServerRpc();
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)] void CookServerRpc()
+    {
+        StartCookClientRpc();
+
+        if(IsServer)
+        {
+            StartCoroutine(CookRoutine());
+        }
+    }
+
+    [ClientRpc] void StartCookClientRpc()
+    {
+        GetComponent<Animator>().SetTrigger("Cook");
+        liquid.SetActive(true);
+        myLight.SetActive(true);
+        cookingVFX.Play();
+        boilingSFX.Play();
+        cookingSliderBG.SetActive(true);
+    }
+
+    IEnumerator CookRoutine()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(updateSliderValueTime);
+            cookingSliderCurrentTime += 1 / cookTime;
+            UpdateSliderValueClientRpc(cookingSliderCurrentTime);
+            if(cookingSlider.fillAmount >= 1)
             {
-                PV.RPC(nameof(RPC_Cook), RpcTarget.All);
+                break;
             }
         }
+
+        DestroyAllPlantObj();
+        CookedClientRpc();
+        StopCoroutine(CookRoutine());
+    }
+
+    [ServerRpc(RequireOwnership = false)] void CollectedCookedItemServerRpc()
+    {
+        CollectedCookedItemClientRpc();
+    }
+
+    [ClientRpc] void CollectedCookedItemClientRpc()
+    {
+        readyItem.SetActive(false);
+        itemReady = false;
+
+        daffodilTaskImage.gameObject.SetActive(true);
+        hyacinthTaskImage.gameObject.SetActive(true);
+        yellowMushroomTaskImage.gameObject.SetActive(true);
+        purpleMushroomTaskImage.gameObject.SetActive(true);
+
+        currentDaffodil = maxDaffodil;
+        currentHyacinth = maxHyacinth;
+        currentYellowMushroom = maxYellowMushroom;
+        currentPurpleMushroom = maxPurpleMushroom;
+
+        daffodilText.text = currentDaffodil.ToString();
+        hycainthText.text = currentHyacinth.ToString();
+        yellowMushroomText.text = currentYellowMushroom.ToString();
+        purpleMushroomText.text = currentPurpleMushroom.ToString();
+
+        cookingSliderCurrentTime = 0;
+        cookingSlider.fillAmount = cookingSliderCurrentTime;
+        cookingSliderBG.SetActive(false);
+        liquid.SetActive(false);
+        myLight.SetActive(false);
+    }
+
+    [ClientRpc] void CookedClientRpc()
+    {
+        readyItem.SetActive(true);
+        itemReady = true;
+        GetComponent<Animator>().SetTrigger("Idle");
+        myLight.SetActive(false);
+        cookingVFX.Stop();
+        boilingSFX.Stop();
+        cookingSliderBG.SetActive(false);
+    }
+
+    [ClientRpc] void UpdateSliderValueClientRpc(float fillAmount)
+    {
+        cookingSlider.fillAmount = fillAmount;
     }
 
     bool CheckNeeded(PlantType type)
@@ -199,87 +295,18 @@ public class Cauldron : MonoBehaviour
             return true;
     }
 
-    [PunRPC] void RPC_Cook()
-    {
-        GetComponent<Animator>().SetTrigger("Cook");
-        liquid.SetActive(true);
-        myLight.SetActive(true);
-        cookingVFX.Play();
-        boilingSFX.Play();
-        cookingSliderBG.SetActive(true);
-
-        if(PhotonNetwork.IsMasterClient)
-        {
-            StartCoroutine(CookRoutine());
-        }
-    }
-
-    IEnumerator CookRoutine()
-    {
-        while(true)
-        {
-            yield return new WaitForSeconds(updateSliderValueTime);
-            PV.RPC(nameof(RPC_UpdateSliderValue),RpcTarget.All);
-            if(cookingSlider.fillAmount >= 1)
-            {
-                break;
-            }
-        }
-
-        DestroyAllPlantObj();
-        PV.RPC(nameof(RPC_Cooked),RpcTarget.AllViaServer);
-    }
-
-    [PunRPC] void RPC_CollectedCookedItem()
-    {
-        daffodilTaskImage.gameObject.SetActive(true);
-        hyacinthTaskImage.gameObject.SetActive(true);
-        yellowMushroomTaskImage.gameObject.SetActive(true);
-        purpleMushroomTaskImage.gameObject.SetActive(true);
-
-        readyItem.SetActive(false);
-        itemReady = false;
-
-        currentDaffodil = maxDaffodil;
-        currentHyacinth = maxHyacinth;
-        currentYellowMushroom = maxYellowMushroom;
-        currentPurpleMushroom = maxPurpleMushroom;
-
-        daffodilText.text = currentDaffodil.ToString();
-        hycainthText.text = currentHyacinth.ToString();
-        yellowMushroomText.text = currentYellowMushroom.ToString();
-        purpleMushroomText.text = currentPurpleMushroom.ToString();
-
-        cookingSliderCurrentTime = 0;
-        cookingSlider.fillAmount = cookingSliderCurrentTime;
-        cookingSliderBG.SetActive(false);
-        liquid.SetActive(false);
-        myLight.SetActive(false);
-    }
-
-    [PunRPC] void RPC_UpdateSliderValue()
-    {
-        cookingSliderCurrentTime += 1 / cookTime;
-        cookingSlider.fillAmount = cookingSliderCurrentTime;
-    }
-
-    [PunRPC] void RPC_Cooked()
-    {
-        readyItem.SetActive(true);
-        itemReady = true;
-        GetComponent<Animator>().SetTrigger("Idle");
-        myLight.SetActive(false);
-        cookingVFX.Stop();
-        boilingSFX.Stop();
-        cookingSliderBG.SetActive(false);
-    }
-
     void DestroyAllPlantObj()
+    {
+        DestroyAllPlantObjServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)] void DestroyAllPlantObjServerRpc()
     {
         foreach (var item in plantObjs)
         {
-            PhotonNetwork.Destroy(item);
+            item.GetComponent<NetworkObject>().Despawn();
         }
+
         plantObjs.Clear();
     }
 

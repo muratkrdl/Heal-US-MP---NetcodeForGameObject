@@ -1,12 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 
-public class DoctorCollisionParticle : MonoBehaviour
+public class DoctorCollisionParticle : NetworkBehaviour
 {
-    [SerializeField] PhotonView PV;
-
     [SerializeField] ParticleSystem poisonFX;
 
     [SerializeField] int poisonDamageCounter;
@@ -18,21 +16,13 @@ public class DoctorCollisionParticle : MonoBehaviour
 
     int poisonComplier;
 
-    public int PoisonDamage
+    void Start() 
     {
-        get
-        {
-            return poisonDamageCounter;
-        }
-        set
-        {
-            poisonDamageCounter = value;
-        }
+        if(!IsOwner) enabled = false;    
     }
 
     void OnParticleCollision(GameObject other) 
     {
-        if(!PV.IsMine) { return; }
         poisonComplier++;
         if(!isPoisened)
         {
@@ -49,30 +39,41 @@ public class DoctorCollisionParticle : MonoBehaviour
     IEnumerator GetDamageFromPoison()
     {
         isPoisened = true;
-        PV.RPC(nameof(RPC_OpenPoisonVFX), RpcTarget.All);
+
+        ChangePoisonVFXStateServerRpc(true);
+
         yield return new WaitForSeconds(2.85f);
         int damage = Mathf.RoundToInt(poisonComplier / poisonDamageDecreaseComplierAmount);
         for (int i = 0; i < poisonDamageCounter; i++)
         {
             playerHP.DecreaseHP(damage);
-            SoundManager.Instance.RPCPlaySound3D("Poison Hit", transform.position);
+            SoundManager.Instance.PlaySound3D("Poison Hit", transform.position); // herkese çal
             Manager.Instance.SpawnFloatingText(transform.position, damage.ToString(), Color.red);
             yield return new WaitForSeconds(1);
         }
-        PV.RPC(nameof(RPC_ClosePoisonVFX), RpcTarget.All);
+
+        ChangePoisonVFXStateServerRpc(false);
+
         poisonComplier = 0;
         isPoisened = false;
         StopCoroutine(GetDamageFromPoison());
     }
 
-    [PunRPC] void RPC_ClosePoisonVFX()
+    [ServerRpc(RequireOwnership = false)] void ChangePoisonVFXStateServerRpc(bool _state)
     {
-        poisonFX.Stop();
+        ChangePoisonVFXStateClientRpc(_state);
     }
 
-    [PunRPC] void RPC_OpenPoisonVFX()
+    [ClientRpc] void ChangePoisonVFXStateClientRpc(bool _state)
     {
-        poisonFX.Play();
+        if(_state)
+        {
+            poisonFX.Play();
+        }
+        else
+        {
+            poisonFX.Stop();
+        }
     }
 
 }

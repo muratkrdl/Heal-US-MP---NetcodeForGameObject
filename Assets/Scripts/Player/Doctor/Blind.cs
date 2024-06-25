@@ -1,14 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using Unity.Properties;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Blind : MonoBehaviour
+public class Blind : NetworkBehaviour
 {
-    [SerializeField] PhotonView PV;
-
     [SerializeField] float blindTime;
 
     [SerializeField] Image[] blindStars;
@@ -23,16 +21,25 @@ public class Blind : MonoBehaviour
 
     [SerializeField] Image blindImage;
 
+    void Start() 
+    {
+        if(!IsOwner) enabled = false;
+    }
+
     void OnTriggerEnter(Collider other) 
     {
+        if(!IsOwner) return;
+
         if(other.transform.CompareTag("Flash"))
         {
-            if(other.transform.GetComponent<FlashObj>().GetPlantType == PlantType.potion)
+            PlantType type = other.transform.GetComponent<FlashObj>().GetPlantType;
+
+            if(type == PlantType.potion)
             {
                 GetComponent<DoctorCollisionParticle>().StartGetDamageFromPoison(Random.Range(400, 601));
             }
 
-            Color myColor = other.transform.GetComponent<FlashObj>().GetPlantType switch
+            Color myColor = type switch
             {
                 PlantType.daffodil => daffodilColor,
                 PlantType.hyacinth => hycanithColor,
@@ -45,8 +52,10 @@ public class Blind : MonoBehaviour
             {
                 return;
             }
+            
+            SetStarsColor(myColor);
 
-            float realBlindTime =  other.transform.GetComponent<FlashObj>().GetPlantType switch
+            float realBlindTime =  type switch
             {
                 PlantType.daffodil => blindTime,
                 PlantType.hyacinth => blindTime,
@@ -55,7 +64,7 @@ public class Blind : MonoBehaviour
                 _ => blindTime / 4,
             };
 
-            SetStarsColor(myColor);
+            other.GetComponentInChildren<FlashObj>().KYS();
             SetFadeBlindStars();
             Invoke(nameof(SetUnFadeBlindStars), realBlindTime);
         }
@@ -63,14 +72,24 @@ public class Blind : MonoBehaviour
 
     void SetUnFadeBlindStars()
     {
-        PV.RPC(nameof(RPC_SetBlindImage), RpcTarget.All, false);
+        SetBlindImageStateServerRpc(false);
         starsAnimator.SetTrigger("UnFade");
     }
 
     void SetFadeBlindStars()
     {
-        PV.RPC(nameof(RPC_SetBlindImage), RpcTarget.All, true);
+        SetBlindImageStateServerRpc(true);
         starsAnimator.SetTrigger("Fade");
+    }
+
+    [ServerRpc(RequireOwnership = false)] void SetBlindImageStateServerRpc(bool _state)
+    {
+        SetBlindImageStateClientRpc(_state);
+    }
+
+    [ClientRpc] void SetBlindImageStateClientRpc(bool _state)
+    {
+        blindImage.gameObject.SetActive(_state);
     }
 
     void SetStarsColor(Color myColor)
@@ -79,11 +98,6 @@ public class Blind : MonoBehaviour
         {
             item.color = myColor;
         }
-    }
-
-    [PunRPC] void RPC_SetBlindImage(bool value)
-    {
-        blindImage.gameObject.SetActive(value);
     }
 
 }

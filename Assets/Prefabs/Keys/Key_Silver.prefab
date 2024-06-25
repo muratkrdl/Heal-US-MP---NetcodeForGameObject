@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7551836934864537515}
   - component: {fileID: -1094038024072721960}
   - component: {fileID: 363810249292423188}
-  - component: {fileID: 148272491760403202}
+  - component: {fileID: -5856239500675231871}
   m_Layer: 19
   m_Name: Key_Silver
   m_TagString: Key
@@ -136,8 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a948f0b604098049a79a18d72921cdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PV: {fileID: 148272491760403202}
---- !u!114 &148272491760403202
+--- !u!114 &-5856239500675231871
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -146,17 +145,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 37228223483615655}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: 0}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  GlobalObjectIdHash: 4040479340
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 1
+  AutoObjectParentSync: 1

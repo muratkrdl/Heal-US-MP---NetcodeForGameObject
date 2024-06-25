@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using StarterAssets;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements.Experimental;
 
-public class Ice : MonoBehaviour
+public class Ice : NetworkBehaviour
 {
     [SerializeField] int lifeTime;
     [SerializeField] float slowTime;
@@ -13,28 +14,18 @@ public class Ice : MonoBehaviour
     [SerializeField] ParticleSystem iceFX;
     [SerializeField] BoxCollider boxCollider;
 
-    public int SetSlowAmount
+    public override void OnNetworkSpawn()
     {
-        set
-        {
-            slowAmount = value;
-        }
-    }
-
-    float slowAmountPercent;
-
-    void Start()
-    {
+        if(!IsOwner) return;
         Invoke(nameof(KYS),lifeTime);
-        SetPercentSlowAmount();
     }
 
     void OnTriggerEnter(Collider other) 
     {
         if(other.TryGetComponent<FirstPersonController>(out var player))
         {
-            player.MoveSpeed = player.GetInitialMoveSpeed / slowAmountPercent;
-            player.SprintSpeed = player.GetInitialSprintSpeed / slowAmountPercent;
+            player.MoveSpeed = player.GetInitialMoveSpeed / slowAmount;
+            player.SprintSpeed = player.GetInitialSprintSpeed / slowAmount;
         }
     }
 
@@ -49,14 +40,27 @@ public class Ice : MonoBehaviour
 
     void KYS()
     {
-        iceFX.Stop();
-        boxCollider.size = Vector3.zero;
-        Destroy(gameObject,slowTime + 5);
+        KYSServerRpc();
     }
 
-    public void SetPercentSlowAmount()
+    [ServerRpc(RequireOwnership = false)] void KYSServerRpc()
     {
-        slowAmountPercent = slowAmount / 25;
+        KYSClientRpc();
+    }
+
+    [ClientRpc] void KYSClientRpc()
+    {
+        iceFX.Stop();
+        boxCollider.size = Vector3.zero;
+        if(IsServer)
+        {
+            Invoke(nameof(DeSpawnObj), slowTime + 5);
+        }
+    }
+
+    void DeSpawnObj()
+    {
+        GetComponent<NetworkObject>().Despawn();
     }
 
 }

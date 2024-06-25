@@ -6,6 +6,8 @@ public class FPSAnimation : MonoBehaviour
 {
     [SerializeField] Animator animator;
 
+    [SerializeField] Animator threeDModelAnimator;
+
     [SerializeField] CharacterAnimation characterAnimation;
 
     [SerializeField] AbilityFireball abilityFireball;
@@ -19,6 +21,43 @@ public class FPSAnimation : MonoBehaviour
     [SerializeField] DoctorMelee doctorMelee;
 
     [SerializeField] FlashAbility flashAbility;
+
+    bool canUseAbility = true;
+
+    public bool GetCanUseAbility
+    {
+        get
+        {
+            return canUseAbility;
+        }
+    }
+
+    public void SetTrueCanUseAbility()
+    {
+        canUseAbility = true;
+        threeDModelAnimator.SetBool("CanUseAbility", canUseAbility);
+        characterAnimation.SetSecondLayerWeight(0);
+    }
+    public void SetFalseCanUseAbility()
+    {
+        canUseAbility = false;
+        threeDModelAnimator.SetBool("CanUseAbility", canUseAbility);
+        characterAnimation.SetSecondLayerWeight(1);
+    }
+
+    public void UseAbilityStart()
+    {
+        SetFalseCanUseAbility();
+        if(flashAbility != null)
+        {
+            flashAbility.UsingFlash = true;
+        }
+    }
+
+    public void AbilityFinEvent()
+    {
+        SetTrueCanUseAbility();
+    }
 
 #region Fireball
     public void Fireball()
@@ -156,10 +195,6 @@ public class FPSAnimation : MonoBehaviour
     {
         doctorSpawnAbility.StartSpawnStoneMonsters();
     }
-    public void DoctorMeleeAnimationEvent()
-    {
-        //doctorMelee.;
-    }
 #endregion
 
     public void GetDamage()
@@ -185,9 +220,9 @@ public class FPSAnimation : MonoBehaviour
         animator.SetTrigger("Flash");
     }
 
-    public void FlashAnimationEvemt()
+    public void FlashAnimationEvent()
     {
-        flashAbility.FlashAnimationEvemt();
+        flashAbility.FlashAnimationEvent();
     }
 
     public void PlaySFx(string str)

@@ -1,119 +1,231 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Manager : MonoBehaviour
+public class Manager : NetworkBehaviour
 {
     public static Manager Instance;
 
-    [SerializeField] PhotonView PV;
+	[SerializeField] GameTimer gameTimer;
+	[SerializeField] GameObject waitingOtherPlayersCanvas;
+
+    [SerializeField] float loadDelay;
 
     [SerializeField] Camera cam;
     [SerializeField] Image blackImage;
 
     [SerializeField] GameObject floatingTextPrefab;
 
-    PlayerManager playerManager;
+    [SerializeField] EscMenu escMenu;
 
-    public PlayerManager SetPlayerManager
+    int villagerDeadCounter = 0;
+
+    string loadSceneName = "";
+
+    int readyCounter = 0;
+
+    bool requiredTypeHasDisconnected;
+
+    int maxPlayers;
+
+    
+	bool canStart = false;
+	int canStartCounter;
+	int neededAmountForStart;
+
+
+    public bool GetCanStart
     {
-        set
+        get
         {
-            playerManager = value;
+            return canStart;
         }
     }
+ 
+    public bool RequiredTypeHasDisconnected
+    {
+        get
+        {
+            return requiredTypeHasDisconnected;
+        }
+        set
+        {
+            requiredTypeHasDisconnected = value;
+        }
+    }
+
+    public EscMenu GetEscMenu
+    {
+        get
+        {
+            return escMenu;
+        }
+    }
+
+    public void ClientConnected()
+    {
+        Invoke(nameof(IncreaseReadyPlayerServerRpc), 1);
+    }
+
+    [ServerRpc(RequireOwnership = false)] void IncreaseReadyPlayerServerRpc()
+	{
+		canStartCounter++;
+		if(canStartCounter >= neededAmountForStart)
+		{
+			GameCanStartClientRpc();
+			if(gameTimer != null)
+			{
+				gameTimer.StartGameTimer();
+			}
+		}
+	}
+
+	[ClientRpc] void GameCanStartClientRpc()
+	{
+		canStart = true;
+		waitingOtherPlayersCanvas.SetActive(false);
+	}
 
     public void SetCamera(bool value)
     {
         cam.gameObject.SetActive(value);
-        blackImage.gameObject.SetActive(false);
     }
 
-    void Awake() 
+    void Awake()
     {
         Instance = this;
     }
 
     void Start() 
     {
-        PhotonNetwork.AutomaticallySyncScene = false;
-        Invoke(nameof(DisableBlackImage),2);
+        Application.quitting += Application_Quitting;
+        maxPlayers = LobbyManager.Instance.GetCurrentPlayersAmount;
+        neededAmountForStart = maxPlayers;
     }
 
-    void DisableBlackImage()
+    public override void OnDestroy() 
     {
-        if(blackImage.gameObject.activeSelf)
+        Application.quitting -= Application_Quitting;
+    }
+
+    public void Application_Quitting()
+    {
+        if(!Instance.RequiredTypeHasDisconnected)
         {
-            blackImage.GetComponent<Animator>().SetTrigger("UnFade");
+            var type = escMenu.FirstPersonController.HumanType;
+            if(type == HumanType.patrick || type == HumanType.doctor)
+            {
+                RequiredTypeHasDisconnectedServerRpc();
+            }
         }
+        if(LobbyManager.Instance != null)
+        {
+            LobbyManager.Instance.KYS();
+        }
+        if(NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.Shutdown();
+            Destroy(NetworkManager.Singleton.gameObject);
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)] public void RequiredTypeHasDisconnectedServerRpc(ServerRpcParams serverRpcParams = default)
+    {
+        RequiredTypeHasDisconnectedClientRpc(serverRpcParams.Receive.SenderClientId);
+    }
+
+    [ClientRpc] void RequiredTypeHasDisconnectedClientRpc(ulong clientId)
+    {
+        if(clientId == NetworkManager.Singleton.LocalClientId) return;
+        Instance.SetCamera(true);
+        Instance.RequiredTypeHasDisconnected = true;
+        escMenu.SetRequiredTypeDisconnectedPanel(true);
+        Cursor.lockState = CursorLockMode.None;
     }
 
     public void SpawnFloatingText(Vector3 pos,string str,Color color)
     {
-        if(PV.IsMine) { return; }
+        SpawnFloatingTextServerRpc(pos, str);
+    }
+
+    [ServerRpc(RequireOwnership = false)] void SpawnFloatingTextServerRpc(Vector3 pos,string str)
+    {
+        SpawnFloatingTextClientRpc(pos, str);
+    }
+
+    [ClientRpc] void SpawnFloatingTextClientRpc(Vector3 pos,string str)
+    {
         var text = Instantiate(floatingTextPrefab,pos,Quaternion.identity);
-        text.GetComponent<FloatingText>().SetTextValues(str,color);
+        text.GetComponent<FloatingText>().SetTextValues(str, Color.red);
     }
 
     public void PatrickLoseGame()
     {
-        PV.RPC(nameof(RPC_PatrickLoseGame), RpcTarget.All);
-    }
-
-    [PunRPC] void RPC_PatrickLoseGame()
-    {
-        playerManager.GetFPSPlayer.GetComponentInChildren<EscMenu>().SetFade();
-        Invoke(nameof(LoadPatrickLoseLevel), 1.5f);
-    }
-
-    void LoadPatrickLoseLevel()
-    {
-        PhotonNetwork.LoadLevel(3);
+        ChangeScene("PatrickLose");
     }
 
     public void PatrickWinGame()
     {
-        PV.RPC(nameof(RPC_PatrickWinGame), RpcTarget.All);
+        ChangeScene("PatrickWin");
     }
 
-    [PunRPC] void RPC_PatrickWinGame()
+    void ChangeScene(string str)
     {
-        playerManager.GetFPSPlayer.GetComponentInChildren<EscMenu>().SetFade();
-        Invoke(nameof(LoadPatrickWinLevel), 1.5f);
+        ChangeSceneServerRpc(str);
     }
 
-    void LoadPatrickWinLevel()
+    [ServerRpc(RequireOwnership = false)] void ChangeSceneServerRpc(string str)
     {
-        PhotonNetwork.LoadLevel(4);
+        ChangeSceneClientRpc(str);
+        
+        Invoke(nameof(LoadLevelClientRpc), loadDelay);
+    }
+
+    [ClientRpc] void ChangeSceneClientRpc(string str)
+    {
+        loadSceneName = str;
+        blackImage.gameObject.SetActive(true);
+        blackImage.GetComponent<Animator>().SetTrigger("Fade");
+    }
+
+    [ClientRpc] void LoadLevelClientRpc()
+    {
+        if(IsClient)
+        {
+            LoadingSceneServerRpc();
+        }
+
+        SceneManager.LoadScene(loadSceneName);
+    }
+
+    [ServerRpc(RequireOwnership = false)] void LoadingSceneServerRpc()
+    {
+        readyCounter += 1;
+
+        if(readyCounter >= LobbyManager.Instance.GetMaxPlayers -1)
+        {
+            SceneManager.LoadScene(loadSceneName);
+        }
     }
 
     public void CheckPatrickLose()
     {
-        int deadCounter = 0;
-        PV.RPC(nameof(SendToMaster),RpcTarget.MasterClient, "checking");
-        foreach (var player in PhotonNetwork.PlayerList)
-        {
-            if(player.CustomProperties.ContainsKey("Dead"))
-            {
-                deadCounter++;
-            }
-        }
-        if(deadCounter >= (PhotonNetwork.PlayerList.Length -2) / 2)
-        {
-            //PatrickLoseGame();
-            Debug.Log("patrick lose");
-        }
-        PV.RPC(nameof(SendToMaster),RpcTarget.MasterClient, deadCounter.ToString());
+        CheckPatrickLoseServerRpc();
     }
 
-    //sil 
-    [PunRPC] void SendToMaster(string str)
+    [ServerRpc(RequireOwnership = false)] void CheckPatrickLoseServerRpc()
     {
-        Debug.Log(str);
+        villagerDeadCounter++;
+        if(villagerDeadCounter >= maxPlayers -2)
+        {
+            PatrickLoseGame();
+        }
     }
 
 }

@@ -1,23 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class EnergyExplosion : MonoBehaviour
+public class EnergyExplosion : NetworkBehaviour
 {
-
-    float damage;
-
-    public float SetDamage
-    {
-        set
-        {
-            damage = value;
-        }
-    }
+    [SerializeField] float damage;
 
     void Start() 
     {
-        Destroy(gameObject,2);
+        if(!IsOwner) return;
+        Invoke(nameof(KYSServerRpc), 2);
     }
 
     void OnTriggerEnter(Collider other) 
@@ -27,6 +20,11 @@ public class EnergyExplosion : MonoBehaviour
             other.gameObject.GetComponentInChildren<PlayerHP>().DecreaseHP(damage);
             Manager.Instance.SpawnFloatingText(transform.position, damage.ToString(), Color.red);
         }
+    }
+
+    [ServerRpc(RequireOwnership = false)] void KYSServerRpc()
+    {
+        gameObject.GetComponent<NetworkObject>().Despawn();
     }
 
 }

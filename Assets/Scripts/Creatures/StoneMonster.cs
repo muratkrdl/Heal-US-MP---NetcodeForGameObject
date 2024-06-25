@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class StoneMonster : MonoBehaviour
+public class StoneMonster : NetworkBehaviour
 {
     [SerializeField] NavMeshAgent navMeshAgent;
     [SerializeField] ParticleSystem tailFX;
@@ -13,41 +14,25 @@ public class StoneMonster : MonoBehaviour
 
     [SerializeField] BoxCollider boxCollider;
 
-    float damage;
+    [SerializeField] float damage;
 
     float lifeTime;
 
     Transform target;
 
-    public Transform SetTarget
-    {
-        set
-        {
-            target = value;
-        }
-    }
-
-    public float SetDamage
-    {
-        set
-        {
-            damage = value;
-        }
-    }
-
-    public float SetLifeTime
-    {
-        set
-        {
-            lifeTime = value;
-        }
-    }
-
     void Start() 
     {
         transform.LookAt(target);
+        if(!IsOwner) return;
         Invoke(nameof(LifeTimeKYS),lifeTime);
         StartCoroutine(StartDestination());
+    }
+
+    public void SetSpawnValues(Transform _target, float _lifeTime, Vector3 _pos)
+    {
+        target = _target;
+        lifeTime = _lifeTime;
+        transform.position = _pos;
     }
 
     void OnTriggerEnter(Collider other) 
@@ -72,17 +57,34 @@ public class StoneMonster : MonoBehaviour
 
     public void LifeTimeKYS()
     {
+        LifeTimeKYSServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)] void LifeTimeKYSServerRpc()
+    {
+        LifeTimeKYSClientRpc();
+    }
+
+    [ClientRpc] void LifeTimeKYSClientRpc()
+    {
         myRenderer.enabled = false;
         boxCollider.enabled = false;
         tailFX.Stop();
         dieFX.Play();
-        Invoke(nameof(KYS),1);
+
+        if(!IsOwner) return;
+        Invoke(nameof(KYS), 2);
     }
 
     void KYS()
     {
-        SoundManager.Instance.RPCPlaySound3D("Stone Monster Die", transform.position);
-        Destroy(gameObject);
+        KYSServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)] void KYSServerRpc()
+    {
+        SoundManager.Instance.PlaySound3D("Stone Monster Die", transform.position); // herkese çal
+        GetComponent<NetworkObject>().Despawn();
     }
 
 }

@@ -1,13 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AbilityHeal : MonoBehaviour
+public class AbilityHeal : NetworkBehaviour
 {
-    [SerializeField] PhotonView PV;
-
     [SerializeField] Image healFillArea;
 
     [SerializeField] FPSAnimation fpsAnimator;
@@ -22,13 +20,13 @@ public class AbilityHeal : MonoBehaviour
 
     void Start() 
     {
-        HideVisualArea();    
+        if(!IsOwner) enabled = false;
+
+        HideVisualArea();
     }
 
     void Update() 
     {
-        if(!PV.IsMine) { return; }
-
         if(Physics.Raycast(playerCam.position, transform.TransformDirection(Vector3.forward), out RaycastHit hit, range, layerMask))
         {
             var villager = hit.transform.GetComponent<Villager>();
@@ -60,15 +58,14 @@ public class AbilityHeal : MonoBehaviour
     {
         HealingFalse();
         fpsAnimator.Idle();
-        characterAnimation.SetTrueCanUseAbility();
+        fpsAnimator.SetTrueCanUseAbility();
         HideVisualArea();
         StopAllCoroutines();
     }
 
     void UsingAbilityResetAnim()
 	{
-		characterAnimation.SetFalseCanUseAbility();
-		characterAnimation.SetPlayerSpeedToHalf();
+		fpsAnimator.SetFalseCanUseAbility();
 		ResetWalkAnimation();
 	}
 
@@ -85,7 +82,7 @@ public class AbilityHeal : MonoBehaviour
             {
                 if(villager.GetIsInfected)
                 {
-                    villager.GetHeal();
+                    villager.GethHealDamageServerRpc(false, 15);
                     HideVisualArea();
                 }
             }
@@ -95,7 +92,7 @@ public class AbilityHeal : MonoBehaviour
     public void StartFillArea()
     {
         HideVisualArea();
-        if(PV.IsMine)
+        if(IsOwner)
         {
             StartCoroutine(StartRoutine());
         }
@@ -143,5 +140,4 @@ public class AbilityHeal : MonoBehaviour
     {
         isHealing = false;
     }
-
 }

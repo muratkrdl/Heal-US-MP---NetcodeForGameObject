@@ -16,6 +16,8 @@ public class InventorySlot : MonoBehaviour
     [SerializeField] Sprite purpleMushroomSprite;
     [SerializeField] Sprite cookedPotionSprite;
 
+    [SerializeField] Transform container;
+
     GameObject inventoryItem;
 
     bool hasItem;
@@ -76,7 +78,7 @@ public class InventorySlot : MonoBehaviour
             _ => cookedPotionSprite
         };
 
-        inventoryItem = Instantiate(inventoryItemPrefab,transform);
+        inventoryItem = Instantiate(inventoryItemPrefab, container);
         inventoryItem.GetComponent<Image>().sprite = choosenSprite;
         inventoryItem.GetComponentInChildren<TextMeshProUGUI>().text = itemAmount.ToString();
 
@@ -87,7 +89,7 @@ public class InventorySlot : MonoBehaviour
 
     public void SetVisualArea(bool value)
     {
-        choosenVisualArea.SetActive(value);
+        choosenVisualArea.GetComponent<Image>().enabled = value;
     }
 
 }

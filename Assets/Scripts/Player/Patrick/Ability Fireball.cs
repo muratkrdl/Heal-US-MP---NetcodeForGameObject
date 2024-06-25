@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using Photon.Pun;
 using TMPro;
 using Unity.Mathematics;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,8 +11,6 @@ public class AbilityFireball : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI fireballCDText;
     [SerializeField] Image fireballBG;
-
-    [SerializeField] PhotonView PV;
 
     [SerializeField] Camera cam;
 
@@ -24,24 +22,10 @@ public class AbilityFireball : MonoBehaviour
     [SerializeField] int abilityCD;
 
     [SerializeField] float manaCost;
-    [SerializeField] float damage;
-    [SerializeField] int stunTime;
 
     int currentAbilityCD = 0;
 
     bool canThrowball = true;
-
-    public int StunTime
-    {
-        get
-        {
-            return stunTime;
-        }
-        set
-        {
-            stunTime = value;
-        }
-    }
     
     public float GetManaCost
     {
@@ -69,20 +53,24 @@ public class AbilityFireball : MonoBehaviour
         Mana.Instance.DecreaseMana(manaCost);
         
         var direction = (mouseLookPos.position - cam.transform.position).normalized;
-        PV.RPC(nameof(ThrowBall),RpcTarget.All,direction);
+
+        ThrowBall(direction); // sync
     }
 
-    [PunRPC] void ThrowBall(Vector3 dir)
+    void ThrowBall(Vector3 dir)
     {
-        var fireball = Instantiate(fireballPrefab,fireballSpawnPosition.position,Quaternion.identity);
-        fireball.GetComponent<FireBall>().ThrowBall(dir);
-        fireball.GetComponent<FireBall>().SetFireBallDamage = damage;
-        fireball.GetComponent<FireBall>().SetStunTime = stunTime;
+        ThrowBallServerRpc(dir);
 
-        if(PV.IsMine)
-        {
-            StartCoroutine(ThrowFireBallCo());
-        }
+        if(!GetComponentInParent<NetworkObject>().IsOwner) return;
+
+        StartCoroutine(ThrowFireBallCo()); // cd
+    }
+
+    [ServerRpc(RequireOwnership = false)] void ThrowBallServerRpc(Vector3 dir)
+    {
+        var fireball = Instantiate(fireballPrefab, fireballSpawnPosition.position, Quaternion.identity);
+        fireball.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.ServerClientId, true);
+        fireball.GetComponent<FireBall>().ThrowBall(dir);
     }
 
     IEnumerator ThrowFireBallCo()

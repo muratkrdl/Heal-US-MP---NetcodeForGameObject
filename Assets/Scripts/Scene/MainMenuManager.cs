@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -34,7 +33,6 @@ public class MainMenuManager : MonoBehaviour
 
     public void OpenMenu(string menuName)
     {
-
         foreach (var item in menus)
         {
             if(item.menuName == menuName)

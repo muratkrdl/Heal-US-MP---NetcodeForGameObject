@@ -30715,6 +30715,13 @@ AnimationClip:
   m_HasGenericRootTransform: 1
   m_HasMotionFloatCurves: 0
   m_Events:
+  - time: 0
+    functionName: UseAbilityStart
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 0.3
     functionName: IceThrowSoundEvent
     data: 
@@ -30724,6 +30731,13 @@ AnimationClip:
     messageOptions: 0
   - time: 0.43333334
     functionName: UseIcePotionAnimationEvent
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.7
+    functionName: AbilityFinEvent
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

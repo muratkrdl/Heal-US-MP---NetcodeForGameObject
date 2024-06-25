@@ -94,9 +94,9 @@ GameObject:
   - component: {fileID: 1036581824379326703}
   - component: {fileID: 3153220857265121436}
   - component: {fileID: 6680872346294914961}
-  - component: {fileID: 2774709712658422023}
   - component: {fileID: 6747540606075303976}
-  - component: {fileID: 76635637257536434}
+  - component: {fileID: -8277448424237353286}
+  - component: {fileID: 6943083808717972140}
   m_Layer: 19
   m_Name: Switch
   m_TagString: Lever
@@ -161,31 +161,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.23, y: 0.6, z: 0.36}
-  m_Center: {x: 0, y: 0, z: 0.3}
---- !u!114 &2774709712658422023
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4789261607985716560}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: 76635637257536434}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  m_Size: {x: 0.6, y: 0.7, z: 0.8}
+  m_Center: {x: 0, y: 0, z: 0.4}
 --- !u!114 &6747540606075303976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,9 +175,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb28d7991daa9494ea0f05adef5eec3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PV: {fileID: 2774709712658422023}
   moveObject: {fileID: 0}
---- !u!114 &76635637257536434
+--- !u!114 &-8277448424237353286
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -209,18 +185,39 @@ MonoBehaviour:
   m_GameObject: {fileID: 4789261607985716560}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowLayerWeightsInspector: 1
-  ShowParameterInspector: 1
-  m_SynchronizeParameters:
-  - Type: 9
-    SynchronizeType: 1
-    Name: On
-  m_SynchronizeLayers:
-  - SynchronizeType: 1
-    LayerIndex: 0
+  GlobalObjectIdHash: 84920783
+  InScenePlacedSourceGlobalObjectIdHash: 1688772215
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 1
+  AutoObjectParentSync: 1
+--- !u!114 &6943083808717972140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4789261607985716560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2071f1f07b75297428237a8468fb4e4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 2081823275
+    DestinationState: -1674441366
+    TransitionDuration: 0.01
+    TriggerNameHash: -1674441366
+    TransitionIndex: 0
+  m_Animator: {fileID: 3153220857265121436}
 --- !u!1 &7516487578330283855
 GameObject:
   m_ObjectHideFlags: 0

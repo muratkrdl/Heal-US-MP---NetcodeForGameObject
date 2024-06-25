@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2775000597174790307}
   - component: {fileID: 6839950441477220008}
   - component: {fileID: 7599276535405214850}
-  - component: {fileID: -5027023093615964012}
   - component: {fileID: 3966860308258115009}
   m_Layer: 0
   m_Name: FloatingText
@@ -173,28 +172,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_renderer: {fileID: 6839950441477220008}
   m_maskType: 0
---- !u!114 &-5027023093615964012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8904006263016973048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!114 &3966860308258115009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,7 +185,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   myText: {fileID: 7599276535405214850}
-  PV: {fileID: -5027023093615964012}
   speed: 1.5
   lerpTimeColor: 0.07
   lerpTimeAlpha: 1

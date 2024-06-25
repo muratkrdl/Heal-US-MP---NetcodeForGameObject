@@ -1,16 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
 using TMPro;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Mana : MonoBehaviour
+public class Mana : NetworkBehaviour
 {
     public static Mana Instance;
-
-    [SerializeField] PhotonView PV;
 
     [SerializeField] float maxMana;
     [SerializeField] float increaseSpeed;
@@ -45,10 +43,12 @@ public class Mana : MonoBehaviour
         }
     }
 
-    void Awake()
+    public override void OnNetworkSpawn()
     {
-        if(!PV.IsMine) { return; }
-        Instance = this;
+        if(IsOwner)
+        {
+            Instance = this;
+        }
     }
 
     void Start() 
@@ -67,7 +67,6 @@ public class Mana : MonoBehaviour
 
     void Update() 
     {
-        if(!PV.IsMine) { return; }
         if(currentMana >= maxMana || isChanging) { return; }
         if(currentMana < 0) 
         {

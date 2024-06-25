@@ -1,12 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 
-public class FenceGate : MonoBehaviour,IBoolInteractable
+public class FenceGate : NetworkBehaviour, IBoolInteractable
 {
-    [SerializeField] PhotonView PV;
-
     bool gateOpen = false;
 
     public void Interact(Interact interact)
@@ -23,12 +21,23 @@ public class FenceGate : MonoBehaviour,IBoolInteractable
 
     void Interact()
     {
-        GetComponent<Animator>().SetTrigger("Open");
+        AnimationServerRpc();
     }
 
     public void AnimationEvent()
     {
         SoundManager.Instance.PlaySound3D("Door",transform.position);
+        gateOpen = true;
+    }
+
+    [ServerRpc(RequireOwnership = false)] void AnimationServerRpc()
+    {
+        AnimationClientRpc();
+    }
+
+    [ClientRpc] void AnimationClientRpc()
+    {
+        GetComponent<Animator>().SetTrigger("Open");
         gateOpen = true;
     }
 

@@ -1,49 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Photon.Pun;
-using Photon.Realtime;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class UseIcePotion : MonoBehaviour
+public class UseIcePotion : NetworkBehaviour
 {
     [SerializeField] Camera cam;
     [SerializeField] Transform mouseLookPos;
+
+    [SerializeField] GameObject iceObjPrefab;
 
     [SerializeField] Transform throwPosition;
     [SerializeField] Transform player;
     [SerializeField] float throwSpeed;
     [SerializeField] float throwUpForce;
 
-    [SerializeField] int slowAmount;
     [SerializeField] IcePotions icePotions;
-
-    public int SlowAmount
-    {
-        get
-        {
-            return slowAmount;
-        }
-        set
-        {
-            slowAmount = value;
-        }
-    }
 
     public void UseIcePotionAsAbility()
     {
         var direction = (mouseLookPos.position - cam.transform.position).normalized;
         Vector3 throwForce = direction * throwSpeed + transform.up * throwUpForce;
         icePotions.DecreasePotionCount();
-        ThrowIcePotion(throwForce);
+        ThrowIcePotionServerRpc(throwForce, throwPosition.position);
     }
 
-    void ThrowIcePotion(Vector3 direction)
+    [ServerRpc(RequireOwnership = false)] void ThrowIcePotionServerRpc(Vector3 direction, Vector3 pos)
     {
-        var ice = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs","Ability Ice Potion"),throwPosition.position,cam.transform.rotation);
+        var ice = Instantiate(iceObjPrefab, pos, Quaternion.identity); 
+        ice.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.ServerClientId, true);
         ice.GetComponent<AbilityIcePotion>().SetPlayer = player;
-        ice.GetComponent<AbilityIcePotion>().SetSlowAmount = slowAmount;
         ice.GetComponent<AbilityIcePotion>().ThrowPotion(direction);
     }
 

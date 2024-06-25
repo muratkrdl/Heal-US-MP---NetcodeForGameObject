@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 
-public class IcePickup : MonoBehaviour, IPickUp
+public class IcePickup : NetworkBehaviour, IPickUp
 {
-    [SerializeField] PhotonView PV;
     [SerializeField] float stopParticleTime;
 
     [SerializeField] ParticleSystem spawnParticleSystem;
@@ -14,8 +13,9 @@ public class IcePickup : MonoBehaviour, IPickUp
 
     void Start() 
     {
-        transform.SetParent(parent);
         Invoke(nameof(StopParticleSystem),stopParticleTime);
+        if(!IsOwner) return;
+        transform.SetParent(parent);
     }
 
     void StopParticleSystem()
@@ -27,21 +27,13 @@ public class IcePickup : MonoBehaviour, IPickUp
     {
         if(other.GetComponent<CharacterController>() != null && !other.CompareTag("Villager"))
         {
-            IcePotions playersPotionData = other.GetComponentInChildren<IcePotions>();
-            if(playersPotionData.GetCurrentCount >= playersPotionData.GetMaxCount) { return; }
+            IcePotions playerPotionData = other.GetComponentInChildren<IcePotions>();
+            if(playerPotionData.GetCurrentCount >= playerPotionData.GetMaxCount) { return; }
             SoundManager.Instance.PlaySound3D("Pick Up",transform.position);
-            playersPotionData.IncreasePotionCount();
-            if(GetComponentInParent<PotionSpawnPoint>() != null)
-            {
-                parent.GetComponent<PotionSpawnPoint>().StartTimerForPotion();
-            }
-            PV.RPC("KYS",RpcTarget.All);
+            playerPotionData.IncreasePotionCount();
+            
+            GetComponentInParent<PotionSpawnPoint>().PotionPickedUp();
         }
-    }
-
-    [PunRPC] void KYS()
-    {
-        Destroy(gameObject);
     }
 
     public void SetParentTransformAsValue(Transform transform)

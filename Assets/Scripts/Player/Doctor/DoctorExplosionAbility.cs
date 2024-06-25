@@ -1,23 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DoctorExplosionAbility : MonoBehaviour
+public class DoctorExplosionAbility : NetworkBehaviour
 {
     [SerializeField] TextMeshProUGUI highExplosionCDText;
     [SerializeField] Image highExplosionBG;
-
-    [SerializeField] PhotonView PV;
 
     [SerializeField] GameObject energyExplosionPrefab;
     [SerializeField] Camera cam;
 
     [SerializeField] int abilityCD;
 
-    [SerializeField] float damage;
     [SerializeField] float manaCost;
 
     int currentAbilityCD = 0;
@@ -47,25 +44,29 @@ public class DoctorExplosionAbility : MonoBehaviour
 
     public void UseHighExplosion()
     {
-        Mana.Instance.DecreaseMana(manaCost);
-        
         Ray ray = cam.ViewportPointToRay(new Vector3(.5f,.5f));
         ray.origin = cam.transform.position;
         if(Physics.Raycast(ray, out RaycastHit hitData,Mathf.Infinity))
         {
-            PV.RPC(nameof(HighExplosion),RpcTarget.All,hitData.point);
+            if(hitData.transform.CompareTag("Lever") ||
+            hitData.transform.CompareTag("Key") ||
+            hitData.transform.CompareTag("Gate")) return;
+
+            Mana.Instance.DecreaseMana(manaCost);
+            HighExplosion(hitData.point);
         }
     }
 
-    [PunRPC] void HighExplosion(Vector3 pos)
+    void HighExplosion(Vector3 pos)
     {
-        var highExplosion = Instantiate(energyExplosionPrefab,pos,Quaternion.identity);
-        highExplosion.GetComponent<EnergyExplosion>().SetDamage = damage;
+        HighExplosionServerRpc(pos);
 
-        if(PV.IsMine)
-        {
-            StartCoroutine(UseHighExplosionCo());
-        }
+        StartCoroutine(UseHighExplosionCo());
+    }
+
+    [ServerRpc(RequireOwnership = false)] void HighExplosionServerRpc(Vector3 pos)
+    {
+        Instantiate(energyExplosionPrefab, pos, Quaternion.identity).GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.ServerClientId, true);
     }
 
     IEnumerator UseHighExplosionCo()

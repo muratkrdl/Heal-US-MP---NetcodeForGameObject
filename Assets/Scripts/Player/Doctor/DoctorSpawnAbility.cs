@@ -1,25 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
-using Photon.Realtime;
 using TMPro;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DoctorSpawnAbility : MonoBehaviour
+public class DoctorSpawnAbility : NetworkBehaviour
 {
     [SerializeField] TextMeshProUGUI spawnCDText;
     [SerializeField] Image spawnBG;
-
-    [SerializeField] PhotonView PV;
 
     [SerializeField] GameObject stoneMonsterPrefab;
     [SerializeField] Camera cam;
 
     [SerializeField] int abilityCD;
 
-    [SerializeField] float damage;
     [SerializeField] float manaCost;
 
     [SerializeField] int minSpawnMonsterCount;
@@ -33,10 +29,6 @@ public class DoctorSpawnAbility : MonoBehaviour
     int currentAbilityCD = 0;
 
     bool canUseSpawn = false;
-
-    int monsterCount;
-
-    Vector3 spawnPos;
 
     public float GetManaCost
     {
@@ -65,30 +57,33 @@ public class DoctorSpawnAbility : MonoBehaviour
         patrick = GameObject.FindGameObjectWithTag("Patrick").transform;
         canUseSpawn = true;
     }
+
     public void StartSpawnStoneMonsters()
     {
         Mana.Instance.DecreaseMana(manaCost);
-        PV.RPC(nameof(SpawnStoneMonsters),RpcTarget.All);
+
+        SpawnStoneMonsters();
     }
 
-    [PunRPC] void SpawnStoneMonsters()
+    void SpawnStoneMonsters()
     {
-        monsterCount = Random.Range(minSpawnMonsterCount,maxSpawnMonsterCount);
-        spawnPos = transform.position + transform.forward * 2;
+        SpawnStoneMonstersServerRpc();
+        
+        StartCoroutine(UseSpawnAbilityCo()); // cd
+    }
+
+    [ServerRpc(RequireOwnership = false)] void SpawnStoneMonstersServerRpc()
+    {
+        var monsterCount = Random.Range(minSpawnMonsterCount,maxSpawnMonsterCount);
+        var spawnPos = transform.position + transform.forward * 2;
         for (int i = 0; i < monsterCount; i++)
         {
-            var monster = Instantiate(stoneMonsterPrefab,transform.position,Quaternion.identity);
-            monster.GetComponent<StoneMonster>().SetTarget = patrick;
-            monster.GetComponent<StoneMonster>().SetDamage = damage;
-            monster.GetComponent<StoneMonster>().SetLifeTime = Random.Range(minLifeTime,maxLifeTime);
-            monster.transform.position = spawnPos;
-            SoundManager.Instance.RPCPlaySound3D("Spawn Ability", monster.transform.position);
-            if(i %2 == 1) { spawnPos = transform.position + -transform.right * 1.5f;  }
-            else { spawnPos = transform.position + transform.right * 1.5f;  }
-        }
-        if(PV.IsMine)
-        {
-            StartCoroutine(UseSpawnAbilityCo());
+            if(i %2 == 1) { spawnPos = transform.position + -transform.right * 1.5f; }
+            else { spawnPos = transform.position + transform.right * 1.5f; }
+            var monster = Instantiate(stoneMonsterPrefab, spawnPos, Quaternion.identity);
+            monster.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.ServerClientId, true);
+            monster.GetComponent<StoneMonster>().SetSpawnValues(patrick, Random.Range(minLifeTime,maxLifeTime), spawnPos);
+            SoundManager.Instance.PlaySound3D("Spawn Ability", monster.transform.position); // herkese çal
         }
     }
 

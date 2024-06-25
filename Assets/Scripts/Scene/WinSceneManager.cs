@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class WinSceneManager : MonoBehaviourPunCallbacks
+public class WinSceneManager : MonoBehaviour
 {
     [SerializeField] Animator[] villagers;
 
@@ -21,6 +21,10 @@ public class WinSceneManager : MonoBehaviourPunCallbacks
     {
         SetWinAllVillagers();
         Cursor.lockState = CursorLockMode.None;
+
+        LobbyManager.Instance.KYS();
+        NetworkManager.Singleton.Shutdown();
+        Destroy(NetworkManager.Singleton.gameObject);
     }
 
     void SetWinAllVillagers()
@@ -39,7 +43,6 @@ public class WinSceneManager : MonoBehaviourPunCallbacks
 
     void HomeButton()
     {
-        Destroy(RoomManager.Instance.gameObject);
         SceneManager.LoadScene("MainMenu");
     }
 

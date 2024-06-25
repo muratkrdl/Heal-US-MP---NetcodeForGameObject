@@ -1,20 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 
-public class PlantObj : MonoBehaviour
+public class PlantObj : NetworkBehaviour
 {
-    [SerializeField] PhotonView PV;
+    bool collectable = true;
+
+    public bool GetCollectable
+    {
+        get
+        {
+            return collectable;
+        }
+    }
 
     public void KYS()
     {
-        PV.RPC(nameof(RPC_KYS), RpcTarget.All);
+        if(!collectable) return;
+        collectable = false;
+        KYSServerRpc();
     }
 
-    [PunRPC] void RPC_KYS()
+    [ServerRpc(RequireOwnership = false)] void KYSServerRpc()
     {
-        Destroy(gameObject);
+        KYSClientRpc();
+    }
+
+    [ClientRpc] void KYSClientRpc()
+    {
+        gameObject.SetActive(false);
     }
 
 }

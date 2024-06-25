@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Switch : MonoBehaviour,IInteractable
+public class Switch : NetworkBehaviour, IInteractable
 {
-    [SerializeField] PhotonView PV;
-    [SerializeField] GameObject moveObject;
+    [SerializeField] Animator moveObject;
 
     bool leverOn;
 
@@ -19,23 +18,30 @@ public class Switch : MonoBehaviour,IInteractable
     {
         leverOn = true;
         SoundManager.Instance.PlaySound3D("Lever",transform.position);
-        PV.RPC(nameof(DestroyMoveObject),RpcTarget.All);
+        DestroyMoveObjServerRpc();
     }
 
-    [PunRPC] void DestroyMoveObject()
+    [ServerRpc(RequireOwnership = false)] void DestroyMoveObjServerRpc()
     {
-        Destroy(moveObject);
+        moveObject.GetComponent<NetworkObject>().Despawn();
+    }
+
+    [ServerRpc(RequireOwnership = false)] void AnimationServerRpc()
+    {
+        AnimationClientRpc();
+    }
+
+    [ClientRpc] void AnimationClientRpc()
+    {
+        GetComponent<Animator>().SetTrigger("On");
+        leverOn = true;
     }
 
     public void Interact()
     {
         if(leverOn) { return; }
-        PV.RPC(nameof(RPC_Interact),RpcTarget.All);
-    }
-
-    [PunRPC] void RPC_Interact()
-    {
-        GetComponent<Animator>().SetTrigger("On");
+        moveObject.SetTrigger("Move");
+        AnimationServerRpc();
     }
 
 }

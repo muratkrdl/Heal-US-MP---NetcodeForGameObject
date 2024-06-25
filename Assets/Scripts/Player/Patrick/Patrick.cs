@@ -1,14 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Patrick : MonoBehaviour
+public class Patrick : NetworkBehaviour
 {
-	[SerializeField] PhotonView PV;
-
     [Header("KeyCodes")]
 	[SerializeField] KeyCode fireballKeycode;
 	[SerializeField] KeyCode lightningKeycode;
@@ -38,43 +36,37 @@ public class Patrick : MonoBehaviour
 	[SerializeField] Mana playerMana;
 	[SerializeField] Stamina playerStamina;
 
-
 	[SerializeField] CharacterAnimation characterAnimatorScript;
-
 	[SerializeField] FPSAnimation fpsAnimatorScript;
 
     [SerializeField] FirstPersonController firstPersonController;
 
-    PlayerManager playerManager;
-
-    void Start() 
-    {
-		if(!PV.IsMine) { return; }
-        playerManager = firstPersonController.GetPlayerManager;
-    }
+	void Start() 
+	{
+		if(!IsOwner) enabled = false;
+	}
 
     void Update() 
     {
-		if(!PV.IsMine) { return; }
         UseAbility();
         UsePotion();
     }
 
     void UseAbility()
 	{
-		if(Input.GetKeyDown(fireballKeycode) && characterAnimatorScript.GetCanUseAbility && abilityFireball.GetCanThrowFireball && Mana.Instance.GetCurrentMana >= abilityFireball.GetManaCost)
+		if(Input.GetKeyDown(fireballKeycode) && fpsAnimatorScript.GetCanUseAbility && abilityFireball.GetCanThrowFireball && Mana.Instance.GetCurrentMana >= abilityFireball.GetManaCost)
 		{
 			UseFireball();
 		}
-		else if(Input.GetKeyDown(lightningKeycode) && characterAnimatorScript.GetCanUseAbility && abilityLightning.GetCanUseLightning && Mana.Instance.GetCurrentMana >= abilityLightning.GetManaCost)
+		else if(Input.GetKeyDown(lightningKeycode) && fpsAnimatorScript.GetCanUseAbility && abilityLightning.GetCanUseLightning && Mana.Instance.GetCurrentMana >= abilityLightning.GetManaCost)
 		{
 			UseLightning();
 		}
-		else if(Input.GetKeyDown(poisonKeycode) && characterAnimatorScript.GetCanUseAbility && abilityPoison.GetCanUsePoison && Mana.Instance.GetCurrentMana >= abilityPoison.GetManaCost)
+		else if(Input.GetKeyDown(poisonKeycode) && fpsAnimatorScript.GetCanUseAbility && abilityPoison.GetCanUsePoison && Mana.Instance.GetCurrentMana >= abilityPoison.GetManaCost)
 		{
 			UsePoison();
 		}
-		else if(Input.GetKeyDown(useIcePotionKeycode) && characterAnimatorScript.GetCanUseAbility && icePotions.GetCurrentCount > 0)
+		else if(Input.GetKeyDown(useIcePotionKeycode) && fpsAnimatorScript.GetCanUseAbility && icePotions.GetCurrentCount > 0)
 		{
 			UseIcePotion();
 		}
@@ -110,6 +102,8 @@ public class Patrick : MonoBehaviour
 
 	void UsePotion()
 	{
+		if(firstPersonController.GetEscMenu.GetIsThinking) return;
+
 		if(Input.GetKeyDown(useHPPotionKeycode) && hPPotions.GetCurrentCount > 0)
 		{
 			useHPPotion.UseHPPotionFunc();
@@ -126,17 +120,21 @@ public class Patrick : MonoBehaviour
 
 	void UsingAbilityResetAnim()
 	{
-		characterAnimatorScript.SetFalseCanUseAbility();
-		characterAnimatorScript.SetPlayerSpeedToHalf();
+		fpsAnimatorScript.SetFalseCanUseAbility();
         firstPersonController.ResetWalkAnimation();
 	}
 
 	public void GetDamage(float damage)
 	{
-		PV.RPC(nameof(RPC_GetDamage), RpcTarget.All, damage);
+		GetDamageServerRpc(damage);
 	}
 
-	[PunRPC] void RPC_GetDamage(float damage)
+	[ServerRpc(RequireOwnership = false)] void GetDamageServerRpc(float damage)
+	{
+		GetDamageClientRpc(damage);
+	}	
+
+	[ClientRpc] void GetDamageClientRpc(float damage)
 	{
 		playerHP.DecreaseHP(damage);
 	}

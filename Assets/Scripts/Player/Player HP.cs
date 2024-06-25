@@ -1,23 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
-using Photon.Realtime;
 using StarterAssets;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
 using UnityEngine.Events;
+using Unity.Netcode;
 
-public class PlayerHP : MonoBehaviour
+public class PlayerHP : NetworkBehaviour
 {
     public static PlayerHP Instance;
 
     public UnityEvent villagerDead;
 
     [SerializeField] GameObject spawnFreeCamPrefab;
-
-    [SerializeField] PhotonView PV;
 
     [SerializeField] Animator[] dieAnimator;
 
@@ -28,8 +24,6 @@ public class PlayerHP : MonoBehaviour
     [SerializeField] TextMeshProUGUI valuesText;
 
     [SerializeField] FirstPersonController firstPersonController;
-
-    PlayerManager playerManager;
 
     float currentHP;
 
@@ -65,16 +59,19 @@ public class PlayerHP : MonoBehaviour
         }
     }
 
-    void Awake() 
-    {
-        if(!PV.IsMine) { return; }
-        Instance = this;
-    }
-
     void Start() 
     {
         SetStartValues();
+        
         villagerDead.AddListener(Manager.Instance.CheckPatrickLose);
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if(IsOwner)
+        {
+            Instance = this;
+        }
     }
 
     void SetStartValues()
@@ -83,7 +80,6 @@ public class PlayerHP : MonoBehaviour
         currentHP = maxHP;
         targetHP = currentHP;
         hpSlider.value = currentHP;
-        playerManager = GetComponentInParent<FirstPersonController>().GetPlayerManager;
         UpdateCurrentValues();
     }
 
@@ -97,6 +93,26 @@ public class PlayerHP : MonoBehaviour
         StartCoroutine(SmoothHPVisual(-amount,false));
     }
 
+#region decreaseserver
+    public void DecreaseHPWithServer(float amount, ulong _id)
+    {
+        DecreaseHPServerRpc(amount, _id);
+    }
+
+    [ServerRpc(RequireOwnership = false)] void DecreaseHPServerRpc(float amount, ulong _id)
+    {
+        DecreaseHPClientRpc(amount, _id);
+    }
+
+    [ClientRpc] void DecreaseHPClientRpc(float amount, ulong _id)
+    {
+        if(_id == GetComponentInParent<NetworkObject>().OwnerClientId)
+        {
+            StartCoroutine(SmoothHPVisual(-amount,false));
+        }
+    }
+#endregion
+    
     IEnumerator SmoothHPVisual(float amount,bool increase)
     {
         targetHP = currentHP;
@@ -117,33 +133,30 @@ public class PlayerHP : MonoBehaviour
             if(currentHP <= 0 + .2f)
             {
                 //Die
+                HumanType type = GetComponentInParent<FirstPersonController>().HumanType;
                 playerDead = true;
                 SoundManager.Instance.PlaySound3D("Die", transform.position);
-                
-                if(!PV.IsMine) { break; }
-                if(playerManager.GetHumanType == HumanType.patrick)
+
+                if(type == HumanType.patrick)
                 {
                     Manager.Instance.PatrickLoseGame();
                 }
-                else if(playerManager.GetHumanType == HumanType.doctor)
+                else if(type == HumanType.doctor)
                 {
                     Manager.Instance.PatrickWinGame();
                 }
-                else
+                else if(type == HumanType.villager)
                 {
-                    Hashtable playerProps = new()
-                    {
-                        { "Dead", true }
-                    };
-                    PhotonNetwork.SetPlayerCustomProperties(playerProps);
-                    villagerDead.Invoke();
+                    villagerDead?.Invoke();
                     GetComponentInParent<Villager>().CloseVFX();
                 }
 
                 DieAnimation();
 
-                if(playerManager.GetHumanType == HumanType.villager)
-                    Invoke(nameof(SpawnFreeCamera), 1.5f);
+                if(type == HumanType.villager)
+                {
+                    Invoke(nameof(SpawnFreeCamera), 1.5f); // free cam
+                }
             }
 
             if(Mathf.Abs(currentHP - targetHP) <= .02f)
@@ -156,6 +169,7 @@ public class PlayerHP : MonoBehaviour
             }
             UpdateCurrentValues();
         }
+        
         UpdateCurrentValues();
         StopAllCoroutines();
     }
@@ -166,11 +180,6 @@ public class PlayerHP : MonoBehaviour
     }
 
     void DieAnimation()
-    {
-        PV.RPC(nameof(RPC_Animation), RpcTarget.All);
-    }
-
-    [PunRPC] void RPC_Animation()
     {
         foreach(Animator item in dieAnimator)
         {

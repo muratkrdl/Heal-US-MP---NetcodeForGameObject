@@ -1,40 +1,45 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Lightning : MonoBehaviour
+public class Lightning : NetworkBehaviour
 {
     [SerializeField] float lifeTime;
     [SerializeField] float stunTime;
 
     [SerializeField] BoxCollider boxCollider;
 
-    float damage;
-
-    public float SetDamage
-    {
-        set
-        {
-            damage = value;
-        }
-    }
+    [SerializeField] float damage;
 
     void Start() 
     {
         SoundManager.Instance.PlaySound3D("Lightning",transform.position);
+        if(!IsOwner) return;
         Invoke(nameof(DisableLightning),lifeTime);
     }
 
     void DisableLightning()
     {
+        DisableLightningClientRpc();
+
+        Invoke(nameof(KYS),lifeTime*4);
+    }
+
+    [ClientRpc] void DisableLightningClientRpc()
+    {
         GetComponent<LineRenderer>().enabled = false;
         boxCollider.enabled = false;
-        Invoke(nameof(KYS),lifeTime*4);
     }
 
     void KYS()
     {
         Destroy(gameObject);
+    }
+
+    [ServerRpc(RequireOwnership = false)] void KYSServerRpc()
+    {
+        gameObject.GetComponent<NetworkObject>().Despawn();
     }
 
     void OnTriggerEnter(Collider other) 

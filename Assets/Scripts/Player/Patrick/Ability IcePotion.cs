@@ -1,18 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 
-public class AbilityIcePotion : MonoBehaviour
+public class AbilityIcePotion : NetworkBehaviour
 {
-    [SerializeField] PhotonView PV;
-
     [SerializeField] Rigidbody myRigidbody;
     [SerializeField] GameObject IceFX;
 
     [SerializeField] float rotateSpeed;
 
-    int slowAmount;
     Vector3 rotateVector;
     Transform player;
 
@@ -24,22 +21,18 @@ public class AbilityIcePotion : MonoBehaviour
         }
     }
 
-    public int SetSlowAmount
+    void Start() 
     {
-        set
-        {
-            slowAmount = value;
-        }
+        if(!IsOwner) enabled = false;
     }
 
-    void Start() 
+    public override void OnNetworkSpawn()
     {
         rotateVector = Random.insideUnitSphere.normalized;
     }
 
     void FixedUpdate() 
     {
-        if(!PV.IsMine) { return; }
         transform.Rotate(rotateVector * rotateSpeed);
     }
 
@@ -50,24 +43,32 @@ public class AbilityIcePotion : MonoBehaviour
 
     void OnCollisionEnter(Collision other) 
     {
-        if(!PV.IsMine) { return; }
-
         Vector3 dir = transform.forward;
         dir = -(transform.position - player.position).normalized;
         
         dir.y = 0;
-        SoundManager.Instance.PlaySound3D("Break Glass",transform.position);
-        PV.RPC(nameof(SpawnIceVFX),RpcTarget.All,dir);
         
-        PhotonNetwork.Destroy(gameObject);
+        SoundManager.Instance.PlaySound3D("Break Glass",transform.position);
+        
+        SpawnIceVFX(dir);
+        
+        KYSPotionServerRpc();
     }
 
-    [PunRPC] void SpawnIceVFX(Vector3 direction)
+    [ServerRpc(RequireOwnership = false)] void KYSPotionServerRpc()
     {
-        var iceVFX = Instantiate(IceFX,transform.position,Quaternion.identity);
-        iceVFX.transform.position += direction * 1;
-        IceFX.GetComponent<Ice>().SetSlowAmount = slowAmount;
-        IceFX.GetComponent<Ice>().SetPercentSlowAmount();
+        GetComponent<NetworkObject>().Despawn();
+    }
+
+    void SpawnIceVFX(Vector3 direction)
+    {
+        SpawnIceVFXServerRpc(direction);
+    }
+
+    [ServerRpc(RequireOwnership = false)] void SpawnIceVFXServerRpc(Vector3 direction)
+    {
+        var iceVFX = Instantiate(IceFX, transform.position + direction * 1, Quaternion.identity);
+        iceVFX.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.ServerClientId, true);
     }
 
 }

@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun.UtilityScripts;
 using UnityEngine;
 
 public class CharacterAnimation : MonoBehaviour
@@ -12,8 +11,6 @@ public class CharacterAnimation : MonoBehaviour
 
     [SerializeField] FirstPersonController firstPersonController;
 
-    bool canUseAbility = true;
-
     int index;
 
     public int SetRandomIndexForDoctor
@@ -24,33 +21,16 @@ public class CharacterAnimation : MonoBehaviour
         }
     }
 
-    public bool GetCanUseAbility
-    {
-        get
-        {
-            return canUseAbility;
-        }
-    }
-
     public void SetCharacterAnimationFloat(Vector2 input)
     {
         animator.SetFloat("x",input.x,.1f,Time.deltaTime);
 		animator.SetFloat("y",input.y,.1f,Time.deltaTime);
     }
 
-    public void SetTrueCanUseAbility()
+    public void SetCharacterAnimationFloatDirectly(Vector2 input)
     {
-        if(!canUseAbility)
-        {
-            canUseAbility = true;
-        }
-    }
-    public void SetFalseCanUseAbility()
-    {
-        if(canUseAbility)
-        {
-            canUseAbility = false;
-        }
+        animator.SetFloat("x",input.x);
+		animator.SetFloat("y",input.y);
     }
 
     public void Fireball()
@@ -73,11 +53,6 @@ public class CharacterAnimation : MonoBehaviour
         animator.SetTrigger("Throw");
     }
 
-    public void AbilityFinEvent()
-    {
-        SetTrueCanUseAbility();
-    }
-
     public void Jump()
     {
         animator.SetTrigger("Jump");
@@ -86,6 +61,11 @@ public class CharacterAnimation : MonoBehaviour
     public void Heal()
     {
         animator.SetTrigger("Heal");
+    }
+
+    public void Die()
+    {
+        animator.SetTrigger("Die");
     }
 
     public void GetDamage()
@@ -119,30 +99,6 @@ public class CharacterAnimation : MonoBehaviour
     }
 #endregion
 
-    public void SetPlayerSpeedToHalf()
-    {
-        if(firstPersonController.MoveSpeed != firstPersonController.GetInitialMoveSpeed / 2)
-        {
-            firstPersonController.MoveSpeed = firstPersonController.GetInitialMoveSpeed / 2;
-        }
-        if(firstPersonController.SprintSpeed != firstPersonController.GetInitialSprintSpeed / 2)
-        {
-            firstPersonController.SprintSpeed = firstPersonController.GetInitialSprintSpeed / 2;
-        }
-    }
-
-    public void SetPlayerSpeedToNormal()
-    {
-        if(firstPersonController.MoveSpeed != firstPersonController.GetInitialMoveSpeed)
-        {
-            firstPersonController.MoveSpeed = firstPersonController.GetInitialMoveSpeed;
-        }
-        if(firstPersonController.SprintSpeed != firstPersonController.GetInitialSprintSpeed)
-        {
-            firstPersonController.SprintSpeed = firstPersonController.GetInitialSprintSpeed;
-        }
-    }
-
     public void SpeedUpAnimatorSpeed()
     {
         if(animator.speed == speedUpAnimatonSpeed) { return; }
@@ -157,8 +113,12 @@ public class CharacterAnimation : MonoBehaviour
 
     public void Flash()
     {
-        SetFalseCanUseAbility();
         animator.SetTrigger("Flash");
+    }
+
+    public void SetSecondLayerWeight(float amount)
+    {
+        animator.SetLayerWeight(1, amount);
     }
 
 }

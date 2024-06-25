@@ -1,20 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
-using Photon.Pun;
 using UnityEngine;
 
 public class FreeCameraMovement : MonoBehaviour
 {
 	[SerializeField] CharacterController _controller;
 
-	[SerializeField] EscMenu escMenu;
 
 	[SerializeField] KeyCode sprintKeyCode;
 
 	Vector3 inputDirection = Vector3.zero;
 	Vector2 moveInput;
 	Vector2 mouseInput;
+
+	EscMenu escMenu;
 
 	public float MoveSpeed = 4.0f;
 	public float SprintSpeed = 6.0f;
@@ -38,6 +38,8 @@ public class FreeCameraMovement : MonoBehaviour
 	{
         escMenu.SetUnFade();
 		SetCursorState(true);
+
+		escMenu = Manager.Instance.GetEscMenu;
 	}
 
 	void Update()

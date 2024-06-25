@@ -53,9 +53,10 @@ public class DamageMultiplier : MonoBehaviour
         damageMultiplierValue = liveCounter * increaseAmountDamageMultiplierValue;
         liveText.text = liveCounter.ToString();
         deadText.text = (villagers.Length - liveCounter).ToString();
+
         if(liveCounter < Mathf.RoundToInt(villagers.Length / 2 - 1))
         {
-            GameManager.Instance.LoseGame();
+            // losePatrick
         }
     }
 

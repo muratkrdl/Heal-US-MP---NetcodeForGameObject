@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class FireBall : MonoBehaviour
+public class FireBall : NetworkBehaviour
 {
     [SerializeField] Rigidbody myRigidbody;
 
@@ -14,35 +15,21 @@ public class FireBall : MonoBehaviour
     [SerializeField] Light ponitLight;
     [SerializeField] GameObject sphere;
 
-    int stunTime;
-    float damage;
-
-    public int SetStunTime
-    {
-        set
-        {
-            stunTime = value;
-        }
-    }
-
-    public float SetFireBallDamage
-    {
-        set
-        {
-            damage = value;
-        }
-    }
+    [SerializeField] int stunTime;
+    [SerializeField] float damage;
 
     void Start() 
     {
         Invoke(nameof(DeactiveBall),lifeTime);
+
+        if(!IsOwner) return;
+        myRigidbody.AddForce(transform.forward * speed);
         Invoke(nameof(KYS),lifeTime+2);
     }
     
     public void ThrowBall(Vector3 direction)
     {
         transform.LookAt(transform.position + direction);
-        myRigidbody.AddForce(direction * speed);
     }
 
     void DeactiveBall()
@@ -54,7 +41,6 @@ public class FireBall : MonoBehaviour
     {
         StartCoroutine(AboutSphere());
         GetComponent<SphereCollider>().enabled = false;
-        myRigidbody.velocity = Vector3.zero;
         DisableFX();
     }
 
@@ -76,7 +62,12 @@ public class FireBall : MonoBehaviour
 
     void KYS()
     {
-        Destroy(gameObject);
+        KYSServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)] void KYSServerRpc()
+    {
+        gameObject.GetComponent<NetworkObject>().Despawn();
     }
 
     void DisableFX()

@@ -1,19 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class Poison : MonoBehaviour
+public class Poison : NetworkBehaviour
 {
     [SerializeField] ParticleSystem poisonVFX;
 
     public void OpenPoison()
     {
-        poisonVFX.Play();
+        ChangePoisonStateServerRpc(true);
     }
 
     public void ClosePoison()
     {
-        poisonVFX.Stop();
+        ChangePoisonStateServerRpc(false);
+    }
+
+    [ServerRpc] void ChangePoisonStateServerRpc(bool _state)
+    {
+        ChangePoisonStateClientRpc(_state);
+    }
+
+    [ClientRpc] void ChangePoisonStateClientRpc(bool _state)
+    {
+        if(_state)
+        {
+            poisonVFX.Play();
+        }
+        else
+        {
+            poisonVFX.Stop();
+        }
     }
 
 }

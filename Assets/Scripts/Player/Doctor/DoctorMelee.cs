@@ -1,13 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DoctorMelee : MonoBehaviour
+public class DoctorMelee : NetworkBehaviour
 {
-    [SerializeField] PhotonView PV;
-
     [SerializeField] Image meleeBar;
     [SerializeField] Image meleeBarBG;
 
@@ -41,18 +39,12 @@ public class DoctorMelee : MonoBehaviour
 
     void Start() 
     {
-        if(!PV.IsMine)
-            return;
-
         SetMeleeBar(false);
         initialLerpTime = lerpTime;
     }
 
     public void MeleeAnimationEvent()
     {
-        if(!PV.IsMine)
-            return;
-
         canMeleeAttack = false;
         Ray ray = cam.ViewportPointToRay(new Vector3(.5f,.5f));
         ray.origin = cam.transform.position;
@@ -60,15 +52,15 @@ public class DoctorMelee : MonoBehaviour
         {
             if(hit.transform.TryGetComponent<Villager>(out var villager))
             {
-                villager.GetInfecte(damage / 2);
+                villager.GethHealDamageServerRpc(true, damage / 2);
                 Manager.Instance.SpawnFloatingText(transform.position, damage.ToString(), Color.red);
-                SoundManager.Instance.RPCPlaySound3D("Punch", transform.position);
+                SoundManager.Instance.PlaySound3D("Punch", transform.position); // herkese çal
             }
             else if(hit.transform.TryGetComponent<Patrick>(out var patrick))
             {
                 patrick.GetDamage(damage);
                 Manager.Instance.SpawnFloatingText(transform.position, damage.ToString(), Color.red);
-                SoundManager.Instance.RPCPlaySound3D("Punch", transform.position);
+                SoundManager.Instance.PlaySound3D("Punch", transform.position); // herkese çal
             }
         }
         

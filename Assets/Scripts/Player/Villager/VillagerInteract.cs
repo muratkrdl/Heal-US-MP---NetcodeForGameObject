@@ -1,12 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 
-public class VillagerInteract : MonoBehaviour
+public class VillagerInteract : NetworkBehaviour
 {
-    [SerializeField] PhotonView PV;
-
     [SerializeField] Camera playerCam;
 
     [SerializeField] float range;
@@ -16,10 +14,13 @@ public class VillagerInteract : MonoBehaviour
 
     [SerializeField] Inventory inventory;
 
+    void Start() 
+    {
+        if(!IsOwner) enabled = false;
+    }
+
     void Update()
     {
-        if(!PV.IsMine) { return; }
-
         if(Input.GetKeyDown(keyCode))
         {
             InteractObj();

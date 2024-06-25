@@ -69,7 +69,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -0.059999987, y: -0.040000007}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5027559045095051523
 CanvasRenderer:
@@ -99,12 +99,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7881f770e3bfc6d4b924c49ae67debfe, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7ab2cbe6adaae314084160d78d085a37, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 0
+  m_FillAmount: 0.5
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
@@ -136,7 +136,7 @@ RectTransform:
   m_GameObject: {fileID: 4503955705158337026}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.08, y: 1.24, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2549786810231398047}
@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 7ab2cbe6adaae314084160d78d085a37, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -197,9 +197,8 @@ GameObject:
   - component: {fileID: 7915174397132277759}
   - component: {fileID: 2329212313276480723}
   - component: {fileID: 4094327883898347440}
-  - component: {fileID: 8633068395089257939}
+  - component: {fileID: 8252299421948865267}
   - component: {fileID: 958212914854086200}
-  - component: {fileID: 1423917270528111597}
   m_Layer: 0
   m_Name: Cauldron
   m_TagString: Cauldron
@@ -345,7 +344,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &8633068395089257939
+--- !u!114 &8252299421948865267
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -354,20 +353,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 4703541072963679134}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: 1423917270528111597}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  GlobalObjectIdHash: 871723753
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 1
+  AutoObjectParentSync: 1
 --- !u!114 &958212914854086200
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -380,7 +377,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4900c045f512c9044a082c983b429b7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PV: {fileID: 8633068395089257939}
+  spawnObjPrefabs:
+  - {fileID: 5795347420399025318, guid: 841f4bfc6b30f91428ee5eff4719a110, type: 3}
+  - {fileID: 7612330014235596205, guid: 74c96e486d21ff148954e501648317ab, type: 3}
+  - {fileID: 9162400684918322447, guid: ccb5c8d2a6776e545acffc7e70ab39f5, type: 3}
+  - {fileID: 7011697279053883458, guid: cd1045248166e14439d67a855fb27f94, type: 3}
   itemDropPos: {fileID: 3170481940430552684}
   cookTime: 80
   decreaseTime: 1
@@ -405,30 +406,6 @@ MonoBehaviour:
   maxHyacinth: 1
   maxYellowMushroom: 1
   maxPurpleMushroom: 1
---- !u!114 &1423917270528111597
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4703541072963679134}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowLayerWeightsInspector: 1
-  ShowParameterInspector: 1
-  m_SynchronizeParameters:
-  - Type: 9
-    SynchronizeType: 1
-    Name: Cook
-  - Type: 9
-    SynchronizeType: 1
-    Name: Idle
-  m_SynchronizeLayers:
-  - SynchronizeType: 1
-    LayerIndex: 0
 --- !u!1 &4933500462203001495
 GameObject:
   m_ObjectHideFlags: 0
@@ -973,7 +950,7 @@ RectTransform:
   m_GameObject: {fileID: 7630336976001167432}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.08, y: 1.24, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8031918642376425137}
@@ -981,7 +958,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -0.059999987, y: -0.040000007}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9135352862759613735
 CanvasRenderer:
@@ -1011,7 +988,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7881f770e3bfc6d4b924c49ae67debfe, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 7ab2cbe6adaae314084160d78d085a37, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1033,7 +1010,7 @@ GameObject:
   - component: {fileID: 6013146644175413482}
   - component: {fileID: 5228810258896168310}
   - component: {fileID: 6607582736684322257}
-  - component: {fileID: 6913045005108856915}
+  - component: {fileID: 2630155684418724747}
   m_Layer: 0
   m_Name: Task Canvas
   m_TagString: Untagged
@@ -1126,7 +1103,7 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &6913045005108856915
+--- !u!114 &2630155684418724747
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1135,7 +1112,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8774623038505740869}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f53ea2e8843c27e43938b4df11e4f8f9, type: 3}
+  m_Script: {fileID: 11500000, guid: 61365aee7fd1de546b30f05daf4b15af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8907091302512089026

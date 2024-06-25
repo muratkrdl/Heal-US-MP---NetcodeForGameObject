@@ -2,13 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Doctor : MonoBehaviour
+public class Doctor : NetworkBehaviour
 {
-    [SerializeField] PhotonView PV;
-
     [SerializeField] ParticleSystem lightningFX;
     [SerializeField] ParticleSystem fireBallStunFX;
 
@@ -38,14 +36,10 @@ public class Doctor : MonoBehaviour
 	[SerializeField] Mana playerMana;
 	[SerializeField] Stamina playerStamina;
 
-
 	[SerializeField] CharacterAnimation characterAnimatorScript;
-
 	[SerializeField] FPSAnimation fpsAnimatorScript;
 
     [SerializeField] FirstPersonController firstPersonController;
-
-    PlayerManager playerManager;
 
     bool isStunned;
 
@@ -57,16 +51,14 @@ public class Doctor : MonoBehaviour
         }
     }
 
-    void Start() 
-    {
-		if(!PV.IsMine) { return; }
-        playerManager = firstPersonController.GetPlayerManager;
-    }
+	void Start() 
+	{
+		if(!IsOwner) enabled = false;	
+	}
 
     void Update() 
     {
-		if(!PV.IsMine || GetComponentInChildren<EscMenu>().GetIsThinking) { return; }
-		
+		if(firstPersonController.GetEscMenu.GetIsThinking) { return; }
 
         UseAbility();
         UsePotion();
@@ -74,19 +66,19 @@ public class Doctor : MonoBehaviour
 
     void UseAbility()
 	{
-		if(Input.GetKeyDown(stoneMonsterKeycode) && characterAnimatorScript.GetCanUseAbility && doctorSpawnAbility.GetCanUseSpawn && Mana.Instance.GetCurrentMana >= doctorSpawnAbility.GetManaCost)
+		if(Input.GetKeyDown(stoneMonsterKeycode) && fpsAnimatorScript.GetCanUseAbility && doctorSpawnAbility.GetCanUseSpawn && Mana.Instance.GetCurrentMana >= doctorSpawnAbility.GetManaCost)
 		{
 			UseStoneMonster();
 		}
-		else if(Input.GetKeyDown(highExplosionKeycode) && characterAnimatorScript.GetCanUseAbility && doctorExplosionAbility.GetCanUseHighExplosion && Mana.Instance.GetCurrentMana >= doctorExplosionAbility.GetManaCost)
+		else if(Input.GetKeyDown(highExplosionKeycode) && fpsAnimatorScript.GetCanUseAbility && doctorExplosionAbility.GetCanUseHighExplosion && Mana.Instance.GetCurrentMana >= doctorExplosionAbility.GetManaCost)
 		{
 			UseHighExplosion();
 		}
-		else if(Input.GetKeyDown(useIcePotionKeycode) && characterAnimatorScript.GetCanUseAbility && icePotions.GetCurrentCount > 0)
+		else if(Input.GetKeyDown(useIcePotionKeycode) && fpsAnimatorScript.GetCanUseAbility && icePotions.GetCurrentCount > 0)
 		{
 			UseIcePotion();
 		}
-		else if(Input.GetKeyDown(meleeAttackKeycode) && characterAnimatorScript.GetCanUseAbility && doctorMelee.CanMeleeAttack)
+		else if(Input.GetKeyDown(meleeAttackKeycode) && fpsAnimatorScript.GetCanUseAbility && doctorMelee.CanMeleeAttack)
 		{
 			MeleeAttack();
 		}
@@ -139,32 +131,48 @@ public class Doctor : MonoBehaviour
 
 	void UsingAbilityResetAnim()
 	{
-		characterAnimatorScript.SetFalseCanUseAbility();
-		characterAnimatorScript.SetPlayerSpeedToHalf();
+		fpsAnimatorScript.SetFalseCanUseAbility();
         firstPersonController.ResetWalkAnimation();
 	}
 
     public void MonsterStunned(float time,bool isLightning)
     {
-        PV.RPC(nameof(RPC_OpenVFX), RpcTarget.All, isLightning);
-        Invoke(nameof(StunMonster),time);
+		OpenVFX(isLightning);
+
+        Invoke(nameof(FinishStunMonster),time);
     }
 
-    void StunMonster()
+    void FinishStunMonster()
     {
-        isStunned = false;
-        PV.RPC(nameof(RPC_CloseVFX), RpcTarget.All);
+		CloseVFXServerRpc();
     }
 
-	[PunRPC] void RPC_CloseVFX()
+	[ServerRpc(RequireOwnership = false)] void CloseVFXServerRpc()
 	{
+		CloseVFXClientRpc();
+	}
+
+	[ClientRpc] void CloseVFXClientRpc()
+	{
+		isStunned = false;
+
 		lightningFX.Stop();
 		fireBallStunFX.Stop();
 	}
 
-	[PunRPC] void RPC_OpenVFX(bool isLightning)
+	void OpenVFX(bool isLightning)
 	{
-        isStunned = true;
+        OpenVFXServerRpc(isLightning);
+	}
+
+	[ServerRpc(RequireOwnership = false)] void OpenVFXServerRpc(bool isLightning)
+	{
+		OpenVFXClientRpc(isLightning);
+	}
+
+	[ClientRpc] void OpenVFXClientRpc(bool isLightning)
+	{
+		isStunned = true;
 		if(isLightning)
 		{
 			lightningFX.Play();

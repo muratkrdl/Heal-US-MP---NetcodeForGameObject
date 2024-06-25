@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 
-public class FlashObj : MonoBehaviour
+public class FlashObj : NetworkBehaviour
 {
     [SerializeField] PlantType plantType;
 
@@ -19,8 +19,12 @@ public class FlashObj : MonoBehaviour
     {
         GetComponent<BoxCollider>().enabled = false;
         
-        if(GetComponent<PhotonView>().IsMine)
-            PhotonNetwork.Destroy(transform.parent.gameObject);
+        KYSServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)] void KYSServerRpc()
+    {
+        GetComponentInParent<NetworkObject>().Despawn();
     }
 
 }

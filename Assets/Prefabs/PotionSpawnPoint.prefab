@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1449865767346763786}
-  - component: {fileID: 7807880212756640068}
+  - component: {fileID: -2862269068482784002}
   - component: {fileID: 6431671462500086525}
   m_Layer: 0
   m_Name: PotionSpawnPoint
@@ -27,13 +27,13 @@ Transform:
   m_GameObject: {fileID: 7691067045370565934}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20, y: 0, z: -20}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7807880212756640068
+--- !u!114 &-2862269068482784002
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,19 +42,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 7691067045370565934}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  GlobalObjectIdHash: 2926143963
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 1
+  AutoObjectParentSync: 1
 --- !u!114 &6431671462500086525
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,10 +66,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4243d6d710eb6e4b9748af35f70a250, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PV: {fileID: 7807880212756640068}
   spawnPotionsRange: {x: 5, y: 15}
-  potionPrefabs:
+  potions:
   - {fileID: 2787774932975109673, guid: ed165638765dc5c4793aaf4a67326a04, type: 3}
-  - {fileID: 3325830498752388684, guid: 254c603dbe2f8494a9c2e44239c3755e, type: 3}
   - {fileID: 404966301125554791, guid: 2670385324a81b34493bda66492acfa7, type: 3}
   - {fileID: 5232966004374540203, guid: 98baf0b7524306f4a91c75a501390893, type: 3}
+  - {fileID: 3325830498752388684, guid: 254c603dbe2f8494a9c2e44239c3755e, type: 3}

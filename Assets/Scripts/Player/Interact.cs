@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 
-public class Interact : MonoBehaviour
+public class Interact : NetworkBehaviour
 {
-    [SerializeField] PhotonView PV;
-
     [SerializeField] Camera playerCam;
 
     [SerializeField] float range;
@@ -14,7 +13,7 @@ public class Interact : MonoBehaviour
 
     [SerializeField] KeyCode keyCode;
 
-    bool hasKey;
+    bool hasKey = false;
 
     public bool HasKey
     {
@@ -30,13 +29,11 @@ public class Interact : MonoBehaviour
 
     void Start() 
     {
-        hasKey = false;
+        if(!IsOwner) enabled = false;
     }
 
     void Update()
     {
-        if(!PV.IsMine) { return; }
-
         if(Input.GetKeyDown(keyCode))
         {
             InteractObj();

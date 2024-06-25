@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -8,8 +7,6 @@ using UnityEngine;
 public class FloatingText : MonoBehaviour
 {
     [SerializeField] TextMeshPro myText;
-
-    [SerializeField] PhotonView PV;
 
     [SerializeField] float speed;
     [SerializeField] float lerpTimeColor;
@@ -31,18 +28,16 @@ public class FloatingText : MonoBehaviour
         target = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
         transform.position += randomVector3;
         StartCoroutine(LerpAlpha());
-        if(!PV.IsMine) { return; }
         Invoke(nameof(KYS), lifeTime);
     }
 
     void KYS()
     {
-        PhotonNetwork.Destroy(gameObject);
+        Destroy(gameObject);
     }
 
     void Update()
     {
-        if(!PV.IsMine) { return; }
         if(target == null) { return; }
         transform.LookAt(target.transform);
         transform.Translate(speed * Time.deltaTime * Vector3.up);

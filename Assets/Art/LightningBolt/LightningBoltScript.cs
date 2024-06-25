@@ -7,6 +7,7 @@
 
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.Netcode;
 
 namespace DigitalRuby.LightningBolt
 {
@@ -40,7 +41,7 @@ namespace DigitalRuby.LightningBolt
     /// Allows creation of simple lightning bolts
     /// </summary>
     [RequireComponent(typeof(LineRenderer))]
-    public class LightningBoltScript : MonoBehaviour
+    public class LightningBoltScript : NetworkBehaviour
     {
         [Tooltip("The game object where the lightning will emit from. If null, StartPosition is used.")]
         public GameObject StartObject;
@@ -186,6 +187,22 @@ namespace DigitalRuby.LightningBolt
                 // halve the distance the lightning can deviate for each generation down
                 offsetAmount *= 0.5f;
             }
+        }
+
+        public void SetSpawnValues()
+        {
+            SetSpawnValuesServerRpc();
+        }
+
+        [ServerRpc] void SetSpawnValuesServerRpc()
+        {
+            SetSpawnValuesClientRpc();
+        }
+
+        [ClientRpc] void SetSpawnValuesClientRpc()
+        {
+            EndPosition = transform.position + new Vector3(0,-5,0);
+            StartPosition = EndPosition + new Vector3(0,20,0);
         }
 
         public void RandomVector(ref Vector3 start, ref Vector3 end, float offsetAmount, out Vector3 result)

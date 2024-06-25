@@ -1,11 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
-using Photon.Realtime;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LoseSceneManager : MonoBehaviourPunCallbacks
+public class LoseSceneManager : MonoBehaviour
 {
     [SerializeField] Animator[] villagers;
 
@@ -22,6 +21,10 @@ public class LoseSceneManager : MonoBehaviourPunCallbacks
     {
         SetDieAllVillagers();
         Cursor.lockState = CursorLockMode.None;
+
+        LobbyManager.Instance.KYS();
+        NetworkManager.Singleton.Shutdown();
+        Destroy(NetworkManager.Singleton.gameObject);
     }
 
     void SetDieAllVillagers()
@@ -47,7 +50,6 @@ public class LoseSceneManager : MonoBehaviourPunCallbacks
 
     void HomeButton()
     {
-        Destroy(RoomManager.Instance.gameObject);
         SceneManager.LoadScene("MainMenu");
     }
 

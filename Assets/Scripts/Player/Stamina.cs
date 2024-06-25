@@ -1,15 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Stamina : MonoBehaviour
+public class Stamina : NetworkBehaviour
 {
     public static Stamina Instance;
-
-    [SerializeField] PhotonView PV;
 
     [SerializeField] float maxStamina;
     [SerializeField] float increaseSpeed;
@@ -73,10 +71,12 @@ public class Stamina : MonoBehaviour
         }
     }
 
-    void Awake() 
+    public override void OnNetworkSpawn()
     {
-        if(!PV.IsMine) { return; }
-        Instance = this;
+        if(IsOwner)
+        {
+            Instance = this;
+        }
     }
 
     void Start() 
@@ -94,8 +94,6 @@ public class Stamina : MonoBehaviour
 
     void Update() 
     {
-        if(!PV.IsMine) { return; }
-
         if(Input.GetKeyDown(KeyCode.LeftShift) && !waiting)
         {
             StopAllCoroutines();

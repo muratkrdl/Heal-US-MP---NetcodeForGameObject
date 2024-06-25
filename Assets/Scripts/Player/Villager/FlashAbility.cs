@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Photon.Pun;
+using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class FlashAbility : MonoBehaviour
+public class FlashAbility : NetworkBehaviour
 {
-    [SerializeField] PhotonView PV;
-
+    [SerializeField] GameObject[] flashObjPrefabs;
+    
     [SerializeField] ParticleSystem daffodilVFX;
     [SerializeField] ParticleSystem hycanithVFX;
     [SerializeField] ParticleSystem yellowMushroomVFX;
@@ -16,7 +16,6 @@ public class FlashAbility : MonoBehaviour
     [SerializeField] ParticleSystem potionVFX;
 
     [SerializeField] Transform flashOutPos;
-    [SerializeField] Transform lookPos;
 
     [SerializeField] Inventory inventory;
 
@@ -25,17 +24,32 @@ public class FlashAbility : MonoBehaviour
     [SerializeField] FPSAnimation fPSAnimation;
     [SerializeField] CharacterAnimation characterAnimation;
 
-    const string DAFFODIL_PREFAB_NAME = "DaffodilFlashObj";
-    const string HYCANITH_PREFAB_NAME = "HycanithFlashObj";
-    const string YELLOW_MUSHROOM_PREFAB_NAME = "YellowMushroomFlashObj";
-    const string PURPLE_MUSHROOM_PREFAB_NAME = "PurpleMushroomFlashObj";
-    const string POISON_PREFAB_NAME = "PotionFlashObj";
+    [SerializeField] FirstPersonController firstPersonController;
+
+    bool usingFlash;
+
+    public bool UsingFlash
+    {
+        get
+        {
+            return usingFlash;
+        }
+        set
+        {
+            usingFlash = value;
+        }
+    }
+
+    void Start() 
+    {
+        if(!IsOwner) enabled = false;
+    }
 
     void Update()
     {
-        if(!PV.IsMine) { return; }
+        if(firstPersonController.GetEscMenu.GetIsThinking) return;
 
-        if(Input.GetKeyDown(keyCode) && characterAnimation.GetCanUseAbility)
+        if(Input.GetKeyDown(keyCode) && fPSAnimation.GetCanUseAbility)
         {
             if(!inventory.CanUseFlash()) { return;}
             
@@ -44,36 +58,57 @@ public class FlashAbility : MonoBehaviour
         }
     }
 
-    public void FlashAnimationEvemt()
+    public void FlashAnimationEvent()
     {
         if(!inventory.CanUseFlash()) { return; }
 
-        string prefabName = inventory.GetItemType() switch
+        int prefabIndex = inventory.GetItemType() switch
         {
-            PlantType.daffodil => DAFFODIL_PREFAB_NAME,
-            PlantType.hyacinth => HYCANITH_PREFAB_NAME,
-            PlantType.yellowmushroom => YELLOW_MUSHROOM_PREFAB_NAME,
-            PlantType.purplemushroom => PURPLE_MUSHROOM_PREFAB_NAME,
-            _ => POISON_PREFAB_NAME
+            PlantType.daffodil => 0,
+            PlantType.hyacinth => 1,
+            PlantType.yellowmushroom => 2,
+            PlantType.purplemushroom => 3,
+            _ => 4
         };
         
         inventory.DecreaseItemAmount();
-        PV.RPC(nameof(RPC_FlashVFX), RpcTarget.All, prefabName);
         
-        SoundManager.Instance.RPCPlaySound3D("Throw Plant", transform.position);
-        PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", prefabName), flashOutPos.position, flashOutPos.rotation);
+        FlashVFX(prefabIndex);
+        
+        SoundManager.Instance.PlaySound3D("Throw Plant", transform.position); // herkese çal
+        
+        SpawnFlashObjServerRpc(prefabIndex);
+
+        usingFlash = false;
     }
 
-    [PunRPC] void RPC_FlashVFX(string str)
+    [ServerRpc(RequireOwnership = false)] void SpawnFlashObjServerRpc(int index)
     {
-        ParticleSystem playVFX = str switch
+        GameObject spawnedObj = Instantiate(flashObjPrefabs[index], flashOutPos);
+        spawnedObj.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.ServerClientId, true);
+    }
+
+    void FlashVFX(int index)
+    {
+        FlashVFXServerRpc(index);
+    }
+
+    [ServerRpc(RequireOwnership = false)] void FlashVFXServerRpc(int index)
+    {
+        FlashVFXClientRpc(index);
+    }
+
+    [ClientRpc] void FlashVFXClientRpc(int index)
+    {
+        ParticleSystem playVFX = index switch
         {
-            DAFFODIL_PREFAB_NAME => daffodilVFX,
-            HYCANITH_PREFAB_NAME => hycanithVFX,
-            YELLOW_MUSHROOM_PREFAB_NAME => yellowMushroomVFX,
-            PURPLE_MUSHROOM_PREFAB_NAME => purpleMushroomVFX,
+            0 => daffodilVFX,
+            1 => hycanithVFX,
+            2 => yellowMushroomVFX,
+            3 => purpleMushroomVFX,
             _ => potionVFX
         };
+
         playVFX.Play();
     }
 

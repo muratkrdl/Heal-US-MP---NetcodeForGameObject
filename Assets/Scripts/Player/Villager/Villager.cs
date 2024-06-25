@@ -1,15 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Villager : MonoBehaviour
+public class Villager : NetworkBehaviour
 {
-    [SerializeField] PhotonView PV;
-
     [SerializeField] float decreaseHPTime;
     [SerializeField] float increaseHPTime;
 
@@ -26,9 +24,8 @@ public class Villager : MonoBehaviour
     [SerializeField] Stamina playerStamina;
 
     [SerializeField] FirstPersonController firstPersonController;
-    PlayerManager playerManager;
 
-    bool isInfected;
+    bool isInfected = false;
 
     public bool GetIsInfected
     {
@@ -46,60 +43,66 @@ public class Villager : MonoBehaviour
         }
     }
 
-    void Start() 
+    [ServerRpc(RequireOwnership = false)] public void GethHealDamageServerRpc(bool value, float amount)
     {
-        if(!PV.IsMine) { return; }
-        playerManager = firstPersonController.GetPlayerManager;
+        GethHealDamageClientRpc(value, amount);
     }
 
-    public void GetHeal()
+    [ClientRpc] void GethHealDamageClientRpc(bool value, float amount)
     {
-        PV.RPC(nameof(RPC_GetHealFromPlayer),RpcTarget.All, (float)15);
+        ChangeInfecteState(value);
+        if(!IsOwner) return;
+
+        if(value)
+        {
+            GetInfecte(amount);
+        }
+        else if(!value)
+        {
+            GetHeal();
+        }
     }
 
-    public void GetInfecte(float damage)
+    void GetHeal()
     {
-        PV.RPC(nameof(RPC_GetDamageFromMonster),RpcTarget.All,damage);
-    }
-
-    [PunRPC] void RPC_GetHealFromPlayer(float damage)
-    {
-        if(!isInfected) { return; }
-
         firstPersonController.MoveSpeed = firstPersonController.GetInitialMoveSpeed * increaseSpeedAmount;
         firstPersonController.SprintSpeed = firstPersonController.GetInitialSprintSpeed * increaseSpeedAmount;
         Invoke(nameof(SetNormalSpeed), increaseSpeedTime);
 
-        playerHP.IncreaseHP(damage);
-        if(PV.IsMine)
-        {
-            StopAllCoroutines();
-            StartCoroutine(IncreaseHPWithTime());
-        }
+        playerHP.IncreaseHP(15);
+
+        StopAllCoroutines();
+        StartCoroutine(IncreaseHPWithTime());
+
         SoundManager.Instance.PlaySound3D("Heal",transform.position);
-        infectedVFX.Stop();
-        healVFX.Play();
-        isInfected = false;
     }
 
-    [PunRPC] void RPC_GetDamageFromMonster(float damage)
+    void GetInfecte(float damage)
     {
-        if(isInfected) { return; }
-
         playerHP.DecreaseHP(damage);
-        isInfected = true;
 
-        if(PV.IsMine)
-        {
-            StopAllCoroutines();
-            StartCoroutine(DecreaseHPWithTime());
-        }
+        StopAllCoroutines();
+        StartCoroutine(DecreaseHPWithTime());
 
         SoundManager.Instance.PlaySound3D("Infect",transform.position);
-        infectedVFX.Play();
-        if(!PV.IsMine) { return; }
+        
         characterAnimatorScript.GetDamage();
         fpsAnimatorScript.GetDamage();
+    }
+
+    void ChangeInfecteState(bool value)
+    {
+        if(value)
+        {
+            infectedVFX.Play();
+        }
+        else if(!value)
+        {
+            infectedVFX.Stop();
+            healVFX.Play();
+        }
+        
+        isInfected = value;
     }
 
     void SetNormalSpeed()
@@ -110,10 +113,15 @@ public class Villager : MonoBehaviour
 
     public void CloseVFX()
     {
-        PV.RPC(nameof(RPC_CloseVFX),RpcTarget.All);
+        CloseVFXServerRpc();
     }
 
-    [PunRPC] void RPC_CloseVFX()
+    [ServerRpc(RequireOwnership = false)] void CloseVFXServerRpc()
+    {
+        CloseVFXClientRpc();
+    }
+
+    [ClientRpc] void CloseVFXClientRpc()
     {
         infectedVFX.Stop();
     }

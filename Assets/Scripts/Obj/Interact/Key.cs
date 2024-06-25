@@ -1,22 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Key : MonoBehaviour,IBoolInteractable
+public class Key : NetworkBehaviour, IBoolInteractable
 {
-    [SerializeField] PhotonView PV;
-
     public void Interact(Interact interact)
     {
         interact.HasKey = true;
         SoundManager.Instance.PlaySound3D("Get Key", transform.position);
-        PV.RPC(nameof(DestroyObject),RpcTarget.All);
+        DestroyServerRpc();
     }
 
-    [PunRPC] void DestroyObject()
+    [ServerRpc(RequireOwnership = false)] void DestroyServerRpc()
     {
-        Destroy(gameObject);
+        DestroyClientRpc();
+    }
+
+    [ClientRpc] void DestroyClientRpc()
+    {
+        gameObject.SetActive(false);
     }
 
 }

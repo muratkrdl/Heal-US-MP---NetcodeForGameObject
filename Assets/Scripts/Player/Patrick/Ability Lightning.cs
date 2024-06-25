@@ -2,23 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using DigitalRuby.LightningBolt;
 using UnityEngine;
-using Photon.Pun;
-using System.IO;
 using TMPro;
 using UnityEngine.UI;
+using Unity.Netcode;
 
-public class AbilityLightning : MonoBehaviour
+public class AbilityLightning : NetworkBehaviour
 {
     [SerializeField] TextMeshProUGUI lightningCDText;
     [SerializeField] Image lightningBG;
-
-    [SerializeField] PhotonView PV;
 
     [SerializeField] Camera cam;
 
     [SerializeField] GameObject lightningPrefab;
 
-    [SerializeField] float damage;
     [SerializeField] float manaCost;
 
     Vector3 startPos;
@@ -46,6 +42,8 @@ public class AbilityLightning : MonoBehaviour
 
     void Start() 
     {
+        if(!IsOwner) enabled = false;
+
         DisableLightningCDCounter();
     }
 
@@ -57,24 +55,17 @@ public class AbilityLightning : MonoBehaviour
         ray.origin = cam.transform.position;
         if(Physics.Raycast(ray, out RaycastHit hitData, Mathf.Infinity))
         {
-            PV.RPC(nameof(SpawnLightning),RpcTarget.All,hitData.point);
+            UseLightningServerRpc(hitData.point); // sync
         }
+        
+        StartCoroutine(UseLightningCo()); // cd
     }
 
-    [PunRPC] void SpawnLightning(Vector3 mousePos)
+    [ServerRpc(RequireOwnership = false)] void UseLightningServerRpc(Vector3 dir)
     {
-        var lightning = Instantiate(lightningPrefab,mousePos,Quaternion.identity);
-
-        lightning.GetComponent<Lightning>().SetDamage = damage;
-        endPos = mousePos + new Vector3(0,-5,0);
-        startPos = endPos + new Vector3(0,20,0);
-        lightning.GetComponent<LightningBoltScript>().StartPosition = startPos;
-        lightning.GetComponent<LightningBoltScript>().EndPosition = endPos;
-
-        if(PV.IsMine)
-        {
-            StartCoroutine(UseLightningCo());
-        }
+        var lightning = Instantiate(lightningPrefab, dir, Quaternion.identity);
+        lightning.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.ServerClientId, true);
+        lightning.GetComponent<LightningBoltScript>().SetSpawnValues();
     }
 
     IEnumerator UseLightningCo()

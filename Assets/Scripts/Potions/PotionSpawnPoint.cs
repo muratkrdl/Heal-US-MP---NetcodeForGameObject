@@ -1,59 +1,65 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
 
-public class PotionSpawnPoint : MonoBehaviour
+public class PotionSpawnPoint : NetworkBehaviour
 {
-    [SerializeField] PhotonView PV;
-
     [SerializeField] Vector2 spawnPotionsRange;
 
-    const string HP_POTION_NAME = "HP Potion";
-    const string MANA_POTION_NAME = "Mana Potion";
-    const string STAMINA_POTION_NAME = "Stamina Potion";
-    const string ICE_POTION_NAME = "Ice Potion";
+    [SerializeField] GameObject[] potions;
 
     float randomSpawnRate;
     int randomChoosenPotion;
 
-    string potionName;
+    GameObject spawnPotion;
+
+    GameObject spawnedPotion;
 
     void Start() 
     {
+        if(!IsHost) return;
         StartTimerForPotion();
     }
 
     public void StartTimerForPotion()
     {
-        if(!PhotonNetwork.IsMasterClient) { return; }
-
         randomSpawnRate = Random.Range(spawnPotionsRange.x,spawnPotionsRange.y);
         randomChoosenPotion = Random.Range(0,4);
         StartCoroutine(SpawnPotions(randomSpawnRate,randomChoosenPotion));
-        //PV.RPC(nameof(StartRoutine),RpcTarget.All,randomSpawnRate,randomChoosenPotion);
-    }
-
-    [PunRPC] void StartRoutine(float spawnRate,int choosenPotionIndex)
-    {
-        StartCoroutine(SpawnPotions(spawnRate,choosenPotionIndex));
     }
 
     IEnumerator SpawnPotions(float spawnRate,int choosenPotionIndex)
     {
-        potionName = choosenPotionIndex switch
+        spawnPotion = choosenPotionIndex switch
         {
-            1 => HP_POTION_NAME,
-            2 => MANA_POTION_NAME,
-            3 => STAMINA_POTION_NAME,
-            _ => ICE_POTION_NAME
+            1 => potions[0],
+            2 => potions[1],
+            3 => potions[2],
+            _ => potions[3]
         };
+
         yield return new WaitForSeconds(spawnRate);
-        if(!PhotonNetwork.InLobby || !PhotonNetwork.InRoom) { yield return null; }
-        var potion = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs",potionName),transform.position,Quaternion.identity);
-        potion.GetComponent<IPickUp>().SetParentTransformAsValue(transform);
+        
+        spawnedPotion = Instantiate(spawnPotion,transform.position,Quaternion.identity,transform);
+        spawnedPotion.GetComponent<IPickUp>().SetParentTransformAsValue(transform);
+        spawnedPotion.GetComponent<NetworkObject>().SpawnWithOwnership(NetworkManager.ServerClientId, true);
+
         StopCoroutine(SpawnPotions(spawnRate,choosenPotionIndex));
+    }
+
+    public void PotionPickedUp()
+    {
+        PotionPickedUpServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)] void PotionPickedUpServerRpc()
+    {
+        if(!IsHost) return;
+
+        spawnedPotion.GetComponent<NetworkObject>().Despawn();
+        StartTimerForPotion();
     }
 
 }

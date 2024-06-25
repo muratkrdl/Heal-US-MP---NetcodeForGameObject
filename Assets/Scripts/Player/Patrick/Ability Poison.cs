@@ -1,17 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
-using StarterAssets;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AbilityPoison : MonoBehaviour
+public class AbilityPoison : NetworkBehaviour
 {
     [SerializeField] TextMeshProUGUI poisonCDText;
     [SerializeField] Image poisonBG;
-
-    [SerializeField] PhotonView PV;
 
     [SerializeField] Poison poisonPrefab;
 
@@ -56,25 +53,17 @@ public class AbilityPoison : MonoBehaviour
     {
         Mana.Instance.DecreaseMana(GetManaCost);
 
-        PV.RPC(nameof(OpenPoisonAbility),RpcTarget.All);
+        OpenPoisonAbility();
     }
 
-    [PunRPC] void OpenPoisonAbility()
+    void OpenPoisonAbility()
     {
         poisonPrefab.OpenPoison();
 
-        if(PV.IsMine)
-        {
-            StartCoroutine(PoisonAbilityCo());
-        }
+        StartCoroutine(PoisonAbilityCo()); // cd
     }
 
     public void ClosePoison()
-    {
-        PV.RPC(nameof(ClosePoisonAbility),RpcTarget.All);
-    }
-
-    [PunRPC] void ClosePoisonAbility()
     {
         poisonPrefab.ClosePoison();
     }

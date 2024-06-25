@@ -121791,8 +121791,8 @@ AnimationClip:
   m_HasGenericRootTransform: 1
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 1.3
-    functionName: PoisonAnimationEvent
+  - time: 0
+    functionName: UseAbilityStart
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
@@ -121805,8 +121805,22 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 3
+  - time: 1.3
+    functionName: PoisonAnimationEvent
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 3.3
     functionName: PoisonAnimationFinEvent
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 4.2
+    functionName: AbilityFinEvent
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

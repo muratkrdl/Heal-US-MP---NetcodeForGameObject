@@ -1,22 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
-using Photon.Pun;
+using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class Inventory : MonoBehaviour
+public class Inventory : NetworkBehaviour
 {
     [SerializeField] InventorySlot[] inventorySlots;
+    [SerializeField] FlashAbility flashAbility;
 
     int choosenIndex;
 
     void Start() 
     {
+        if(!IsOwner) enabled = false;
+
         UpdateChoosenItem(0);
     }
 
     void Update() 
     {
+        if(flashAbility.UsingFlash) return;
+
         if(Input.GetKeyDown(KeyCode.Alpha1))
         {
             UpdateChoosenItem(0);
@@ -37,10 +41,27 @@ public class Inventory : MonoBehaviour
         {
             UpdateChoosenItem(4);
         }
+        else if(Input.GetAxisRaw("Mouse ScrollWheel") > 0)
+        {
+            UpdateChoosenItem(choosenIndex + 1);
+        }
+        else if(Input.GetAxisRaw("Mouse ScrollWheel") < 0)
+        {
+            UpdateChoosenItem(choosenIndex - 1);
+        }
     }
 
     void UpdateChoosenItem(int index)
     {
+        if(index > inventorySlots.Length -1)
+        {
+            index = 0;
+        }
+        else if(index < 0)
+        {
+            index = inventorySlots.Length - 1;
+        }
+
         choosenIndex = index;
         foreach (var item in inventorySlots)
         {
@@ -51,6 +72,11 @@ public class Inventory : MonoBehaviour
 
     public void CollectItem(PlantType type, PlantObj destroyObj)
     {
+        if(destroyObj != null)
+        {
+            if(!destroyObj.GetCollectable) return; 
+        }
+        
         if(ContainThisType(type))
         {
             foreach(var item in inventorySlots)
