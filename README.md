@@ -175,11 +175,6 @@ Come on, you need villagers, otherwise who will you buy pot from?
 <img src="https://github.com/muratkrdl/Heal-US-MP---Pun2/blob/main/Pictures%20and%20Gifs/Photos/Picture3.png" width="auto">
 
 
-# Builds
-
-#### Windows (?)
-
-
 ## Authors
 
 - [@muratkrdl](https://github.com/muratkrdl)
